@@ -1,28 +1,52 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Exercise extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
-      // define association here
+      Exercise.belongsTo(models.Lesson, {
+        foreignKey: "lesson_id",
+        as: "lesson",
+      });
+
+      Exercise.hasMany(models.ExerciseOption, {
+        foreignKey: "exercise_id",
+        as: "options",
+      });
     }
   }
-  Exercise.init({
-    lesson_id: DataTypes.INTEGER,
-    type: DataTypes.STRING,
-    question: DataTypes.TEXT,
-    correct_awnser: DataTypes.STRING,
-    explanation: DataTypes.TEXT,
-    position: DataTypes.INTEGER
-  }, {
-    sequelize,
-    modelName: 'Exercise',
-  });
+  Exercise.init(
+    {
+      lesson_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      type: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue: "complete_sentence",
+      },
+      question: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+      },
+      correct_awnser: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      explanation: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      position: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+    },
+    {
+      sequelize,
+      modelName: "Exercise",
+      tableName: "exercises",
+    },
+  );
   return Exercise;
 };
