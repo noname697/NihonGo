@@ -78,7 +78,7 @@ const getLessonExercises = async (lessonId) => {
       "lesson_id",
       "type",
       "question",
-      "correct_awnser",
+      "correct_answer",
       "explanation",
       "position",
     ],

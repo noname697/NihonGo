@@ -45,3 +45,10 @@ const listLessonExercises = async (req, res, next) => {
     next(error);
   }
 };
+
+module.exports = {
+  listModules,
+  showModule,
+  showLesson,
+  listLessonExercises,
+};
