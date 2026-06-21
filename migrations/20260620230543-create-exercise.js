@@ -28,7 +28,7 @@ module.exports = {
         type: Sequelize.TEXT,
         allowNull: false,
       },
-      correct_awnser: {
+      correct_answer: {
         type: Sequelize.STRING,
         allowNull: false,
       },

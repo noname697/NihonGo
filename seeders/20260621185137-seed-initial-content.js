@@ -131,7 +131,7 @@ module.exports = {
       {
         exercise_id: 1,
         text: "は",
-        isCorrect: true,
+        is_correct: true,
         position: 1,
         createdAt: now,
         updatedAt: now,
@@ -139,7 +139,7 @@ module.exports = {
       {
         exercise_id: 1,
         text: "を",
-        isCorrect: false,
+        is_correct: false,
         position: 2,
         createdAt: now,
         updatedAt: now,
@@ -147,7 +147,7 @@ module.exports = {
       {
         exercise_id: 1,
         text: "に",
-        isCorrect: false,
+        is_correct: false,
         position: 3,
         createdAt: now,
         updatedAt: now,
@@ -155,7 +155,7 @@ module.exports = {
       {
         exercise_id: 2,
         text: "です",
-        isCorrect: true,
+        is_correct: true,
         position: 1,
         createdAt: now,
         updatedAt: now,
@@ -163,7 +163,7 @@ module.exports = {
       {
         exercise_id: 2,
         text: "ます",
-        isCorrect: false,
+        is_correct: false,
         position: 2,
         createdAt: now,
         updatedAt: now,
@@ -171,7 +171,7 @@ module.exports = {
       {
         exercise_id: 2,
         text: "は",
-        isCorrect: false,
+        is_correct: false,
         position: 3,
         createdAt: now,
         updatedAt: now,
@@ -179,7 +179,7 @@ module.exports = {
       {
         exercise_id: 3,
         text: "これ",
-        isCorrect: true,
+        is_correct: true,
         position: 1,
         createdAt: now,
         updatedAt: now,
@@ -187,7 +187,7 @@ module.exports = {
       {
         exercise_id: 3,
         text: "それ",
-        isCorrect: false,
+        is_correct: false,
         position: 2,
         createdAt: now,
         updatedAt: now,
@@ -195,7 +195,7 @@ module.exports = {
       {
         exercise_id: 3,
         text: "あれ",
-        isCorrect: false,
+        is_correct: false,
         position: 3,
         createdAt: now,
         updatedAt: now,

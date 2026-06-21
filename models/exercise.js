@@ -29,7 +29,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.TEXT,
         allowNull: false,
       },
-      correct_awnser: {
+      correct_answer: {
         type: DataTypes.STRING,
         allowNull: false,
       },
