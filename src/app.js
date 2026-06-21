@@ -3,6 +3,7 @@ const cors = require("cors");
 const helmet = require("helmet");
 
 const authRouter = require("./routes/auth.routes");
+const contentRouter = require("./routes/content.routes");
 const errorMiddleware = require("./middlewares/error.middleware");
 
 const app = express();
@@ -16,6 +17,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/auth", authRouter);
+app.use("/api/content", contentRouter);
 
 app.use(errorMiddleware);
 
