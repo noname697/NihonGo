@@ -1,30 +1,61 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class UserCharacterProgress extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
-      // define association here
+      UserCharacterProgress.belongsTo(models.User, {
+        foreignKey: "user_id",
+        as: "user",
+      });
+      UserCharacterProgress.belongsTo(models.StudyCharacter, {
+        foreignKey: "character_id",
+        as: "character",
+      });
     }
   }
-  UserCharacterProgress.init({
-    user_id: DataTypes.INTEGER,
-    character_id: DataTypes.INTEGER,
-    correct_attempts: DataTypes.INTEGER,
-    wrong_attemps: DataTypes.INTEGER,
-    last_awnser: DataTypes.STRING,
-    last_result: DataTypes.BOOLEAN,
-    mastery_score: DataTypes.FLOAT,
-    last_practiced_at: DataTypes.DATE
-  }, {
-    sequelize,
-    modelName: 'UserCharacterProgress',
-  });
+  UserCharacterProgress.init(
+    {
+      user_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      character_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      correct_attempts: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
+      },
+      wrong_attemps: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
+      },
+      last_awnser: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      last_result: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
+      },
+      mastery_score: {
+        type: DataTypes.FLOAT,
+        allowNull: false,
+        defaultValue: 0,
+      },
+      last_practiced_at: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+    },
+    {
+      sequelize,
+      modelName: "UserCharacterProgress",
+      tableName: "user_character_progress",
+    },
+  );
   return UserCharacterProgress;
 };

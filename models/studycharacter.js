@@ -1,32 +1,62 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class StudyCharacter extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
-      // define association here
+      StudyCharacter.hasMany(models.UserCharacterProgress, {
+        foreignKey: "character_id",
+        as: "userProgress",
+      });
     }
   }
-  StudyCharacter.init({
-    type: DataTypes.STRING,
-    symbol: DataTypes.STRING,
-    romaji: DataTypes.STRING,
-    meaning: DataTypes.STRING,
-    onyomi: DataTypes.STRING,
-    kunyomi: DataTypes.STRING,
-    jlpt_level: DataTypes.STRING,
-    stroke_count: DataTypes.INTEGER,
-    character_group: DataTypes.STRING,
-    position: DataTypes.INTEGER
-  }, {
-    sequelize,
-    modelName: 'StudyCharacter',
-  });
+  StudyCharacter.init(
+    {
+      type: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      symbol: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      romaji: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      meaning: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      onyomi: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      kunyomi: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      jlpt_level: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      stroke_count: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+      },
+      character_group: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      position: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+    },
+    {
+      sequelize,
+      modelName: "StudyCharacter",
+      tableName: "study_characters",
+    },
+  );
   return StudyCharacter;
 };
