@@ -5,6 +5,7 @@ const {
   Lesson,
   ExerciseOption,
   CourseModule,
+  sequelize,
 } = require("../../models");
 
 const createError = require("../utils/createError");
@@ -104,8 +105,8 @@ const recalculateLessonProgress = async (userId, lessonId, transaction) => {
 };
 
 const submitExerciseAnswer = async (userId, exerciseId, answer) => {
-  if (!answer) {
-    throw createError("Answer is requires", 400);
+  if (answer === undefined || answer === null || String(answer).trim() === "") {
+    throw createError("Answer is required", 400);
   }
 
   const result = await sequelize.transaction(async (transaction) => {
@@ -144,7 +145,19 @@ const submitExerciseAnswer = async (userId, exerciseId, answer) => {
 
     let exerciseProgress;
 
+    const now = new Date();
+
     if (existingProgress) {
+      exerciseProgress = await existingProgress.update(
+        {
+          answer,
+          is_correct: isCorrect,
+          attempts_count: existingProgress.attempts_count + 1,
+          answered_at: now,
+        },
+        { transaction },
+      );
+    } else {
       exerciseProgress = await UserExerciseProgress.create(
         {
           user_id: userId,
@@ -152,7 +165,7 @@ const submitExerciseAnswer = async (userId, exerciseId, answer) => {
           answer,
           is_correct: isCorrect,
           attempts_count: 1,
-          answered_at: new Date(),
+          answered_at: now,
         },
         { transaction },
       );
@@ -176,7 +189,7 @@ const submitExerciseAnswer = async (userId, exerciseId, answer) => {
         is_correct: isCorrect,
         correct_answer: exercise.correct_answer,
         explanation: exercise.explanation,
-        attempts_count: existingProgress.attempts_count,
+        attempts_count: exerciseProgress.attempts_count,
       },
       lessonProgress: {
         lesson_id: lessonProgress.lesson_id,
@@ -194,7 +207,7 @@ const submitExerciseAnswer = async (userId, exerciseId, answer) => {
 };
 
 const getMyLessonProgress = async (userId, lessonId) => {
-  const lessons = await Lesson.findByPk(lessonId, {
+  const lesson = await Lesson.findByPk(lessonId, {
     attributes: ["id", "title", "description"],
   });
 
