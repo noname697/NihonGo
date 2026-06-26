@@ -4,6 +4,7 @@ const helmet = require("helmet");
 
 const authRouter = require("./routes/auth.routes");
 const contentRouter = require("./routes/content.routes");
+const progressRouter = require("./routes/progress.routes");
 const errorMiddleware = require("./middlewares/error.middleware");
 
 const app = express();
@@ -18,6 +19,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/auth", authRouter);
 app.use("/api/content", contentRouter);
+app.use("/api/progress", progressRouter);
 
 app.use(errorMiddleware);
 
