@@ -73,15 +73,7 @@ const getLessonExercises = async (lessonId) => {
 
   const exercises = await Exercise.findAll({
     where: { lesson_id: lessonId },
-    attributes: [
-      "id",
-      "lesson_id",
-      "type",
-      "question",
-      "correct_answer",
-      "explanation",
-      "position",
-    ],
+    attributes: ["id", "lesson_id", "type", "question", "position"],
     include: [
       {
         model: ExerciseOption,
