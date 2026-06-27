@@ -24,7 +24,7 @@ const buildCharactersWhere = (query) => {
   return where;
 };
 
-const checkCharacterAnswer = async (character, answer) => {
+const checkCharacterAnswer = (character, answer) => {
   const normalizedAnswer = normalizeAnswer(answer);
 
   const validAnswers = [
@@ -108,8 +108,8 @@ const getRandomCharacters = async (query) => {
 };
 
 const submitCharacterAnswer = async (userId, characterId, answer) => {
-  if (!answer) {
-    throw createError("Answer is required", 400);
+  if (typeof answer !== "string" || !answer.trim()) {
+    throw createError("Answer must be a non-empty", 400);
   }
 
   const result = await sequelize.transaction(async (transaction) => {
@@ -139,8 +139,10 @@ const submitCharacterAnswer = async (userId, characterId, answer) => {
     });
 
     const correctAttempts = progress.correct_attempts + (isCorrect ? 1 : 0);
-    const wrongAttempts = progress.wrong_attempts + (isCorrect ? 1 : 0);
+    const wrongAttempts = progress.wrong_attempts + (isCorrect ? 0 : 1);
     const masteryScore = calculateMasteryScore(correctAttempts, wrongAttempts);
+
+    const now = new Date();
 
     await progress.update(
       {
@@ -149,7 +151,7 @@ const submitCharacterAnswer = async (userId, characterId, answer) => {
         last_answer: answer,
         last_result: isCorrect,
         mastery_score: masteryScore,
-        last_practiced_at: new Date(),
+        last_practiced_at: now,
       },
       { transaction },
     );
@@ -179,7 +181,7 @@ const submitCharacterAnswer = async (userId, characterId, answer) => {
         correct_attempts: correctAttempts,
         wrong_attempts: wrongAttempts,
         mastery_score: masteryScore,
-        last_practiced_at: progress.last_practiced_at,
+        last_practiced_at: now,
       },
     };
   });
@@ -196,7 +198,7 @@ const getMyTrainerProgress = async (userId, query) => {
     },
     attributes: [
       "character_id",
-      "correct_attemps",
+      "correct_attempts",
       "wrong_attempts",
       "last_answer",
       "last_result",

@@ -28,14 +28,16 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         defaultValue: 0,
       },
-      wrong_attemps: {
+      wrong_attempts: {
         type: DataTypes.INTEGER,
         allowNull: false,
         defaultValue: 0,
+        field: "wrong_attemps",
       },
-      last_awnser: {
+      last_answer: {
         type: DataTypes.STRING,
         allowNull: true,
+        field: "last_awnser",
       },
       last_result: {
         type: DataTypes.BOOLEAN,
