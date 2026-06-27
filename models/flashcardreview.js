@@ -1,30 +1,62 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class FlashcardReview extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
-      // define association here
+      FlashcardReview.belongsTo(models.User, {
+        foreignKey: "user_id",
+        as: "user",
+      });
+      FlashcardReview.belongsTo(models.Flashcard, {
+        foreignKey: "flashcard_id",
+        as: "flashcard",
+      });
     }
   }
-  FlashcardReview.init({
-    user_id: DataTypes.INTEGER,
-    flashcard_id: DataTypes.INTEGER,
-    correct_attempts: DataTypes.INTEGER,
-    wrong_attempts: DataTypes.INTEGER,
-    review_count: DataTypes.INTEGER,
-    mastery_score: DataTypes.FLOAT,
-    due_date: DataTypes.DATE,
-    last_reviewed_at: DataTypes.DATE
-  }, {
-    sequelize,
-    modelName: 'FlashcardReview',
-  });
+  FlashcardReview.init(
+    {
+      user_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      flashcard_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      correct_attempts: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
+      },
+      wrong_attempts: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
+      },
+      review_count: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
+      },
+      mastery_score: {
+        type: DataTypes.FLOAT,
+        allowNull: false,
+        defaultValue: 0,
+      },
+      due_date: {
+        type: DataTypes.DATE,
+        allowNull: false,
+      },
+      last_reviewed_at: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+    },
+    {
+      sequelize,
+      modelName: "FlashcardReview",
+      tableName: "flashcard_reviews",
+    },
+  );
   return FlashcardReview;
 };

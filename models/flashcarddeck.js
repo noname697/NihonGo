@@ -1,26 +1,44 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class FlashcardDeck extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
-      // define association here
+      FlashcardDeck.belongsTo(models.User, {
+        foreignKey: "user_id",
+        as: "user",
+      });
+
+      FlashcardDeck.hasMany(models.Flashcard, {
+        foreignKey: "deck_id",
+        as: "cards",
+      });
     }
   }
-  FlashcardDeck.init({
-    user_id: DataTypes.INTEGER,
-    title: DataTypes.STRING,
-    description: DataTypes.TEXT,
-    is_public: DataTypes.BOOLEAN
-  }, {
-    sequelize,
-    modelName: 'FlashcardDeck',
-  });
+  FlashcardDeck.init(
+    {
+      user_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      title: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      description: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      is_public: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+      },
+    },
+    {
+      sequelize,
+      modelName: "FlashcardDeck",
+      tableName: "flashcard_decks",
+    },
+  );
   return FlashcardDeck;
 };

@@ -15,6 +15,14 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "user_id",
         as: "characterProgress",
       });
+      User.hasMany(models.FlashcardDeck, {
+        foreignKey: "user_id",
+        as: "flashcardDecks",
+      });
+      User.hasMany(models.FlashcardReview, {
+        foreignKey: "user_id",
+        as: "flashcardReviews",
+      });
     }
   }
   User.init(
