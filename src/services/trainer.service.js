@@ -3,7 +3,7 @@ const { Op } = require("sequelize");
 const {
   sequelize,
   StudyCharacter,
-  UserCharactersProgress,
+  UserCharacterProgress,
 } = require("../../models");
 
 const createError = require("../utils/createError");
@@ -123,7 +123,7 @@ const submitCharacterAnswer = async (userId, characterId, answer) => {
 
     const isCorrect = checkCharacterAnswer(character, answer);
 
-    const [progress] = await UserCharactersProgress.findOrCreate({
+    const [progress] = await UserCharacterProgress.findOrCreate({
       where: {
         user_id: userId,
         character_id: characterId,
@@ -190,7 +190,7 @@ const submitCharacterAnswer = async (userId, characterId, answer) => {
 const getMyTrainerProgress = async (userId, query) => {
   const characterWhere = buildCharactersWhere(query);
 
-  const progress = await UserCharactersProgress.findAll({
+  const progress = await UserCharacterProgress.findAll({
     where: {
       user_id: userId,
     },
