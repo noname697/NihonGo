@@ -108,12 +108,9 @@ const deleteCard = async (req, res, next) => {
 
 const listDueCards = async (req, res, next) => {
   try {
-    const cards = await flashcardService.getDueCards(
-      req.user.id,
-      req.query.deck_id,
-    );
+    const cards = await flashcardService.getDueCards(req.user.id, req.query);
 
-    return res.status(200).json(cards);
+    return res.status(200).json({ cards });
   } catch (error) {
     next(error);
   }

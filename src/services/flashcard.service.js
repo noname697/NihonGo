@@ -265,14 +265,18 @@ const deleteCard = async (userId, cardId) => {
   };
 };
 
-const getDueCards = async (userId, deckId) => {
+const getDueCards = async (userId, options = {}) => {
   const now = new Date();
+
+  const deckId = options.deck_id;
+  const limit = Math.min(Number(options.limit) || 20, 100);
 
   const deckWhere = {
     user_id: userId,
   };
 
   if (deckId) {
+    await ensureDeckOwner(userId, deckId);
     deckWhere.id = deckId;
   }
 
@@ -297,6 +301,7 @@ const getDueCards = async (userId, deckId) => {
         model: FlashcardReview,
         as: "reviews",
         attributes: [
+          "id",
           "correct_attempts",
           "wrong_attempts",
           "review_count",
@@ -306,20 +311,67 @@ const getDueCards = async (userId, deckId) => {
         ],
         where: {
           user_id: userId,
-          due_date: {
+        },
+        required: false,
+        duplicating: false,
+      },
+    ],
+    where: {
+      [Op.or]: [
+        {
+          "$reviews.id$": null,
+        },
+        {
+          "$reviews.due_date$": {
             [Op.lte]: now,
           },
         },
-        required: false,
-      },
-    ],
+      ],
+    },
     order: [
-      ["deck_id", "ASC"],
+      [{ model: FlashcardDeck, as: "deck" }, "id", "ASC"],
       ["position", "ASC"],
     ],
+    limit,
+    subQuery: false,
   });
 
-  return cards;
+  return cards.map((card) => {
+    const plainCard = card.get({ plain: true });
+    const review = plainCard.reviews?.[0] || null;
+
+    return {
+      id: plainCard.id,
+      deck_id: plainCard.deck_id,
+      deck: plainCard.deck,
+      front_text: plainCard.front_text,
+      back_text: plainCard.back_text,
+      example_sentence: plainCard.example_sentence,
+      notes: plainCard.notes,
+      position: plainCard.position,
+      review: review
+        ? {
+            id: review.id,
+            correct_attempts: review.correct_attempts,
+            wrong_attempts: review.wrong_attempts,
+            review_count: review.review_count,
+            mastery_score: review.mastery_score,
+            due_date: review.due_date,
+            last_reviewed_at: review.last_reviewed_at,
+            status: "due",
+          }
+        : {
+            id: null,
+            correct_attempts: 0,
+            wrong_attempts: 0,
+            review_count: 0,
+            mastery_score: 0,
+            due_date: now,
+            last_reviewed_at: null,
+            status: "new",
+          },
+    };
+  });
 };
 
 const reviewCard = async (userId, cardId, isCorrect) => {
