@@ -5,7 +5,11 @@ export const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, isLoadingUser } = useAuth();
 
   if (isLoadingUser) {
-    return <div className="">Loading NihonGo!...</div>;
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-paper text-ink dark:bg-ink dark:text-paper">
+        Loading NihonGo!...
+      </div>
+    );
   }
 
   if (!isAuthenticated) {
