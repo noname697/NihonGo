@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+import { Input } from "../components/ui/Input";
 
 export const Landing = () => {
   return (
