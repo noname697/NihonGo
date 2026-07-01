@@ -16,15 +16,21 @@ export const NavBar = () => {
   const { user, logout } = useAuth();
 
   return (
-    <header className="">
-      <div className="">
-        <Link to="/" className="">
-          <div className="">日</div>
-          <strong className="">NihonGo!</strong>
-          <span className="">Learn Japanese</span>
+    <header className="border-b border-zinc-200 bg-white/80 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/80">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
+        <Link to="/" className="flex items-center gap-2">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-nihon-red text-sm font-black text-white">
+            日
+          </div>
+          <strong className="block text-lg leading-none text-zinc-950 dark:text-white">
+            NihonGo!
+          </strong>
+          <span className="text-xs text-zinc-500 dark:text-zinc-400">
+            Learn Japanese
+          </span>
         </Link>
 
-        <nav className="">
+        <nav className="hidden items-center gap-6 md:flex">
           <NavLink to="/dashboard" className={NavLinkClass}>
             Dashboard
           </NavLink>
@@ -39,11 +45,15 @@ export const NavBar = () => {
           </NavLink>
         </nav>
 
-        <div className="">
+        <div className="flex items-center gap-3">
           <ThemeToggle />
 
           {user && (
-            <button type="button" onClick={logout} className="">
+            <button
+              type="button"
+              onClick={logout}
+              className="flex items-center gap-2 rounded-full bg-zinc-100 px-3 py-2 text-sm font-medium text-zinc-700 transition hover:bg-zinc-200 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800"
+            >
               <LogOut size={16} />
               Logout
             </button>
