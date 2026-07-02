@@ -45,7 +45,6 @@ const ProtectedFlashcards = () => {
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <AppLayout />,
     errorElement: <NotFound />,
     children: [
       {
@@ -61,20 +60,25 @@ export const router = createBrowserRouter([
         Component: Register,
       },
       {
-        path: "dashboard",
-        Component: ProtectedDashboard,
-      },
-      {
-        path: "modules",
-        Component: ProtectedModules,
-      },
-      {
-        path: "trainer",
-        Component: ProtectedTrainer,
-      },
-      {
-        path: "flashcards",
-        Component: ProtectedFlashcards,
+        Component: AppLayout,
+        children: [
+          {
+            path: "dashboard",
+            Component: ProtectedDashboard,
+          },
+          {
+            path: "modules",
+            Component: ProtectedModules,
+          },
+          {
+            path: "trainer",
+            Component: ProtectedTrainer,
+          },
+          {
+            path: "flashcards",
+            Component: ProtectedFlashcards,
+          },
+        ],
       },
     ],
   },
