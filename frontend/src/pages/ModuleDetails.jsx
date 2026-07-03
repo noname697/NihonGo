@@ -1,14 +1,17 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router";
+
+import { ArrowLeft } from "lucide-react";
 import { getModuleProgress } from "../api/progress.api";
 import { getApiErrorMessage } from "../utils/getApiErrorMessage";
+
 import { LoadingState } from "../components/ui/LoadingState";
 import { ErrorState } from "../components/ui/ErrorState";
-import { ArrowLeft } from "lucide-react";
 import { PageHeader } from "../components/ui/PageHeader";
 import { Card } from "../components/ui/Card";
 import { Badge } from "../components/ui/Badge";
 import { ProgressBar } from "../components/ui/ProgressBar";
+import { LessonList } from "../components/features/modules/LessonList";
 
 export const ModuleDetails = () => {
   //   const { id } = useParams();
