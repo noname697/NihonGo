@@ -1,4 +1,5 @@
 import { Badge } from "../components/ui/Badge";
+import { EmptyState } from "../components/ui/EmptyState";
 import { ErrorState } from "../components/ui/ErrorState";
 import { LoadingState } from "../components/ui/LoadingState";
 import { PageHeader } from "../components/ui/PageHeader";
@@ -17,7 +18,7 @@ export const Modules = () => {
       />
       <LoadingState />
       <ErrorState title="error example" onRetry={() => console.log("ubi")} />
-
+      <EmptyState title="Nothing here" description="No modules found." />
     </>
   );
 };
