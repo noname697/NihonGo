@@ -1,4 +1,6 @@
 import { Badge } from "../components/ui/Badge";
+import { LoadingState } from "../components/ui/LoadingState";
+import { PageHeader } from "../components/ui/PageHeader";
 
 export const Modules = () => {
   return (
@@ -6,6 +8,13 @@ export const Modules = () => {
       <Badge variant="red">Badge</Badge>
       <Badge variant="zinc">Badge</Badge>
       <Badge variant="rose">Badge</Badge>
+      <PageHeader
+        eyebrow="Modules"
+        title="Module title"
+        description="fewfwfwefwefewfewfwe"
+        action="work"
+      />
+      <LoadingState />
     </>
-  )
+  );
 };
