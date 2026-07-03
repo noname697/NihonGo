@@ -1,24 +1,17 @@
-import { Badge } from "../components/ui/Badge";
-import { EmptyState } from "../components/ui/EmptyState";
-import { ErrorState } from "../components/ui/ErrorState";
-import { LoadingState } from "../components/ui/LoadingState";
-import { PageHeader } from "../components/ui/PageHeader";
+import { ModuleCard } from "../components/features/modules/ModuleCard";
 
 export const Modules = () => {
   return (
     <>
-      <Badge variant="red">Badge</Badge>
-      <Badge variant="zinc">Badge</Badge>
-      <Badge variant="rose">Badge</Badge>
-      <PageHeader
-        eyebrow="Modules"
-        title="Module title"
-        description="fewfwfwefwefewfewfwe"
-        action="work"
+      <ModuleCard
+        module={{
+          level: "Beginner",
+          title: "N5",
+          description: "fiewnfuiewbfeuwyi",
+          progress_percentage: 50,
+        }}
+        progress={50}
       />
-      <LoadingState />
-      <ErrorState title="error example" onRetry={() => console.log("ubi")} />
-      <EmptyState title="Nothing here" description="No modules found." />
     </>
   );
 };
