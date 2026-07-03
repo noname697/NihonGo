@@ -1,3 +1,13 @@
+import { useEffect, useMemo, useState } from "react";
+
+import { ProgressBar } from "../components/ui/ProgressBar";
+import { StatCard } from "../components/ui/StatCard";
+import { Card } from "../components/ui/Card";
+
+import { useAuth } from "../contexts/AuthContext";
+import { getDashboardSummary } from "../api/dashboard.api";
+import { getApiErrorMessage } from "../utils/getApiErrorMessage";
+
 import {
   BookOpen,
   Brain,
@@ -6,13 +16,6 @@ import {
   Layers,
   RefreshCcw,
 } from "lucide-react";
-import { ProgressBar } from "../components/ui/ProgressBar";
-import { StatCard } from "../components/ui/StatCard";
-import { useAuth } from "../contexts/AuthContext";
-import { useEffect, useMemo, useState } from "react";
-import { getDashboardSummary } from "../api/dashboard.api";
-import { getApiErrorMessage } from "../utils/getApiErrorMessage";
-import { Card } from "../components/ui/Card";
 
 const formatPercentage = (value) => {
   return `${Number(value || 0).toFixed(0)}%`;
