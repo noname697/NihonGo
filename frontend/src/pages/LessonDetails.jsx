@@ -1,18 +1,21 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router";
-import { getLessonById, getLessonExercises } from "../api/content.api";
+
+import { ArrowLeft } from "lucide-react";
 import { getApiErrorMessage } from "../utils/getApiErrorMessage";
+import { getLessonById, getLessonExercises } from "../api/content.api";
+
 import { LoadingState } from "../components/ui/LoadingState";
 import { ErrorState } from "../components/ui/ErrorState";
-import { ArrowLeft } from "lucide-react";
 import { PageHeader } from "../components/ui/PageHeader";
-import { ExercisePreview } from "../components/features/modules/ExercisePreview";
+import { InteractiveExerciseCard } from "../components/features/modules/InteractiveExerciseCard";
 
 export const LessonDetails = () => {
   const { id } = useParams();
 
   const [lesson, setLesson] = useState(null);
   const [exercises, setExercises] = useState([]);
+  const [lastLessonProgress, setLastLessonProgress] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -74,6 +77,27 @@ export const LessonDetails = () => {
         </p>
       </section>
 
+      {lastLessonProgress && (
+        <div className="mt-6 rounded-3xl border border-red-100 bg-red-50 p-5 dark:border-red-950 dark:bg-red-950/30">
+          <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+            <div>
+              <p className="text-sm font-bold text-nihon-red">
+                Current lesson progress
+              </p>
+
+              <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
+                {lastLessonProgress.correct_exercises} of{" "}
+                {lastLessonProgress.total_exercises} exercises correct.
+              </p>
+            </div>
+
+            <strong className="text-2xl font-black text-nihon-red">
+              {Number(lastLessonProgress.score || 0).toFixed(0)}%
+            </strong>
+          </div>
+        </div>
+      )}
+
       <section className="mt-8">
         <div className="mb-5">
           <h2 className="text-2xl font-black text-zinc-950 dark:text-white">
@@ -87,7 +111,11 @@ export const LessonDetails = () => {
 
         <div className="grid gap-4">
           {exercises.map((exercise) => (
-            <ExercisePreview key={exercise.id} exercise={exercise} />
+            <InteractiveExerciseCard
+              key={exercise.id}
+              exercise={exercise}
+              onAnswered={(data) => setLastLessonProgress(data.lesson_progress)}
+            />
           ))}
         </div>
       </section>
