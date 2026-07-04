@@ -10,6 +10,7 @@ import { Dashboard } from "../pages/Dashboard";
 import { Trainer } from "../pages/Trainer";
 import { Flashcards } from "../pages/Flashcards";
 import { ModuleDetails } from "../pages/ModuleDetails";
+import { LessonDetails } from "../pages/LessonDetails";
 
 const ProtectedDashboard = () => {
   return (
@@ -51,13 +52,13 @@ const ProtectedModuleDetails = () => {
   );
 };
 
-// const ProtectedLessonDetails = () => {
-//   return (
-//     <ProtectedRoute>
-//       <LessonDetails />
-//     </ProtectedRoute>
-//   );
-// };
+const ProtectedLessonDetails = () => {
+  return (
+    <ProtectedRoute>
+      <LessonDetails />
+    </ProtectedRoute>
+  );
+};
 
 export const router = createBrowserRouter([
   {
@@ -99,10 +100,10 @@ export const router = createBrowserRouter([
             path: "modules/:id",
             Component: ProtectedModuleDetails,
           },
-          // {
-          //   path: "lessons/:id",
-          //   Component: ProtectedLessonDetails,
-          // },
+          {
+            path: "lessons/:id",
+            Component: ProtectedLessonDetails,
+          },
         ],
       },
     ],
