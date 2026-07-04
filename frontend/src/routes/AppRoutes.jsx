@@ -9,6 +9,7 @@ import { Modules } from "../pages/Modules";
 import { Dashboard } from "../pages/Dashboard";
 import { Trainer } from "../pages/Trainer";
 import { Flashcards } from "../pages/Flashcards";
+import { ModuleDetails } from "../pages/ModuleDetails";
 
 const ProtectedDashboard = () => {
   return (
@@ -41,6 +42,22 @@ const ProtectedFlashcards = () => {
     </ProtectedRoute>
   );
 };
+
+const ProtectedModuleDetails = () => {
+  return (
+    <ProtectedRoute>
+      <ModuleDetails />
+    </ProtectedRoute>
+  );
+};
+
+// const ProtectedLessonDetails = () => {
+//   return (
+//     <ProtectedRoute>
+//       <LessonDetails />
+//     </ProtectedRoute>
+//   );
+// };
 
 export const router = createBrowserRouter([
   {
@@ -78,6 +95,14 @@ export const router = createBrowserRouter([
             path: "flashcards",
             Component: ProtectedFlashcards,
           },
+          {
+            path: "modules/:id",
+            Component: ProtectedModuleDetails,
+          },
+          // {
+          //   path: "lessons/:id",
+          //   Component: ProtectedLessonDetails,
+          // },
         ],
       },
     ],

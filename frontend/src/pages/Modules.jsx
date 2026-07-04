@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { ModuleDetails } from "./ModuleDetails";
 import { getOverallProgress } from "../api/progress.api";
 import { getApiErrorMessage } from "../utils/getApiErrorMessage";
 import { LoadingState } from "../components/ui/LoadingState";
@@ -18,7 +17,7 @@ export const Modules = () => {
       setIsLoading(true);
       setError(null);
 
-      const data = await getOverallProgress(id);
+      const data = await getOverallProgress();
 
       setModules(data.progress || []);
     } catch (error) {
@@ -30,7 +29,7 @@ export const Modules = () => {
 
   useEffect(() => {
     loadModules();
-  }, [id]);
+  }, []);
 
   if (isLoading) {
     return <LoadingState message="Loading modules..." />;
@@ -52,20 +51,19 @@ export const Modules = () => {
         eyebrow="JLPT Modules"
         title="Choose you learning path"
         description="Study Japanese step by step through JLPT levels, from beginner N5 to advanced N1."
-      >
-        {modules.length === 0 ? (
-          <EmptyState
-            title="No modules available"
-            description="The backend did not return any modules yet."
-          />
-        ) : (
-          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-            {modules.map((module) => (
-              <ModuleCard key={module.id} module={module} />
-            ))}
-          </div>
-        )}
-      </PageHeader>
+      />
+      {modules.length === 0 ? (
+        <EmptyState
+          title="No modules available"
+          description="The backend did not return any modules yet."
+        />
+      ) : (
+        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+          {modules.map((module) => (
+            <ModuleCard key={module.id} module={module} />
+          ))}
+        </div>
+      )}
     </div>
   );
 };
