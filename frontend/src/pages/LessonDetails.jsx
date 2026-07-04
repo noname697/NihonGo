@@ -1,14 +1,14 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link, useParams } from "react-router";
 
 import { ArrowLeft } from "lucide-react";
-import { getApiErrorMessage } from "../utils/getApiErrorMessage";
 import { getLessonById, getLessonExercises } from "../api/content.api";
+import { getApiErrorMessage } from "../utils/getApiErrorMessage";
 
-import { LoadingState } from "../components/ui/LoadingState";
-import { ErrorState } from "../components/ui/ErrorState";
-import { PageHeader } from "../components/ui/PageHeader";
 import { InteractiveExerciseCard } from "../components/features/modules/InteractiveExerciseCard";
+import { ErrorState } from "../components/ui/ErrorState";
+import { LoadingState } from "../components/ui/LoadingState";
+import { PageHeader } from "../components/ui/PageHeader";
 
 export const LessonDetails = () => {
   const { id } = useParams();
@@ -19,7 +19,17 @@ export const LessonDetails = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const loadLesson = async () => {
+  const getLessonProgressFromResponse = (data) => {
+    return (
+      data?.lesson_progress ??
+      data?.lessonProgress ??
+      data?.progress ??
+      data?.data?.lesson_progress ??
+      null
+    );
+  };
+
+  const loadLesson = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
@@ -36,11 +46,11 @@ export const LessonDetails = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [id]);
 
   useEffect(() => {
     loadLesson();
-  }, [id]);
+  }, [loadLesson]);
 
   if (isLoading) {
     return <LoadingState message="Loading lesson..." />;
@@ -114,7 +124,9 @@ export const LessonDetails = () => {
             <InteractiveExerciseCard
               key={exercise.id}
               exercise={exercise}
-              onAnswered={(data) => setLastLessonProgress(data.lesson_progress)}
+              onAnswered={(data) =>
+                setLastLessonProgress(getLessonProgressFromResponse(data))
+              }
             />
           ))}
         </div>

@@ -1,10 +1,10 @@
+import clsx from "clsx";
+import { CheckCircle, XCircle } from "lucide-react";
 import { useActionState, useState } from "react";
 import { answerExercise } from "../../../api/progress.api";
 import { getApiErrorMessage } from "../../../utils/getApiErrorMessage";
 import { Badge } from "../../ui/Badge";
 import { SubmitButton } from "../../ui/SubmitButton";
-import clsx from "clsx";
-import { CheckCircle, XCircle } from "lucide-react";
 
 const initialState = {
   error: null,
@@ -19,6 +19,16 @@ export const InteractiveExerciseCard = ({ exercise, onAnswered }) => {
   const [typedAnswer, setTypedAnswer] = useState("");
 
   const answerToSubmit = hasOptions ? selectedAnswer : typedAnswer;
+
+  const getLessonProgressFromResponse = (data) => {
+    return (
+      data?.lesson_progress ??
+      data?.lessonProgress ??
+      data?.progress ??
+      data?.data?.lesson_progress ??
+      null
+    );
+  };
 
   const submitAnswerAction = async (previousState, formData) => {
     try {
@@ -50,7 +60,7 @@ export const InteractiveExerciseCard = ({ exercise, onAnswered }) => {
   const [state, formAction] = useActionState(submitAnswerAction, initialState);
 
   const result = state.data?.result;
-  const lessonProgress = state.data?.lesson_progress;
+  const lessonProgress = getLessonProgressFromResponse(state.data);
 
   return (
     <article className="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
