@@ -389,9 +389,38 @@ const getMyOverallProgress = async (userId) => {
   return progress;
 };
 
+const getLessonProgress = async (lessonId, userId) => {
+  return UserLessonProgress.findOne({
+    where: {
+      lesson_id: lessonId,
+      user_id: userId,
+    },
+  });
+};
+
+const getExerciseProgress = async (lessonId, userId) => {
+  return UserExerciseProgress.findAll({
+    where: {
+      user_id: userId,
+    },
+    include: [
+      {
+        model: Exercise,
+        as: "exercise",
+        attributes: [],
+        where: {
+          lesson_id: lessonId,
+        },
+      },
+    ],
+  });
+};
+
 module.exports = {
   submitExerciseAnswer,
   getMyLessonProgress,
   getMyModuleProgress,
   getMyOverallProgress,
+  getLessonProgress,
+  getExerciseProgress,
 };
