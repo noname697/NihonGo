@@ -1,4 +1,4 @@
-const trainerService = require("../services/trainer.service");
+const trainerService = require("../services/domain/trainer.service");
 
 const listCharacters = async (req, res, next) => {
   try {

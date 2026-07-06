@@ -1,4 +1,4 @@
-const contentService = require("../content.service");
+const contentService = require("../domain/content.service");
 
 const getLessonScreen = async (lessonId) => {
   const lesson = await contentService.getLessonById(lessonId);

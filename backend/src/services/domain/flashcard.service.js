@@ -5,9 +5,9 @@ const {
   FlashcardDeck,
   Flashcard,
   FlashcardReview,
-} = require("../../models");
+} = require("../../../models");
 
-const createError = require("../utils/createError");
+const createError = require("../../utils/createError");
 
 const calculateMasteryScore = (correctAttempts, wrongAttempts) => {
   const total = correctAttempts + wrongAttempts;

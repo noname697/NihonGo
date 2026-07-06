@@ -12,7 +12,7 @@ const {
   FlashcardDeck,
   Flashcard,
   FlashcardReview,
-} = require("../../models");
+} = require("../../../models");
 
 const calculatePercentage = (part, total) => {
   if (!total || total === 0) return 0;

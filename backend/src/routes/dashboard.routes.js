@@ -7,6 +7,6 @@ const router = express.Router();
 
 router.use(authMiddleware);
 
-router.get("/summary", dashboardController.showSummary);
+router.get("/summary", dashboardController.getSummary);
 
 module.exports = router;

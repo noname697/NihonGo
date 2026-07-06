@@ -3,8 +3,8 @@ const {
   Lesson,
   Exercise,
   ExerciseOption,
-} = require("../../models");
-const createError = require("../utils/createError");
+} = require("../../../models");
+const createError = require("../../utils/createError");
 
 const getModules = async () => {
   const modules = await CourseModule.findAll({

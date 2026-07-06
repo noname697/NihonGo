@@ -1,4 +1,4 @@
-const contentService = require("../services/content.service");
+const contentService = require("../services/domain/content.service");
 
 const listModules = async (req, res, next) => {
   try {

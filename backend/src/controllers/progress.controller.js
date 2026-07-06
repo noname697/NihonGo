@@ -1,4 +1,4 @@
-const progressService = require("../services/progress.service");
+const progressService = require("../services/domain/progress.service");
 
 const answerExercise = async (req, res, next) => {
   try {

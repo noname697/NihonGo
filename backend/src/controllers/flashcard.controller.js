@@ -1,4 +1,4 @@
-const flashcardService = require("../services/flashcard.service");
+const flashcardService = require("../services/domain/flashcard.service");
 
 const createDeck = async (req, res, next) => {
   try {

@@ -1,11 +1,11 @@
-const dashboardService = require("../services/dashboard.service");
+const dashboardService = require("../services/screens/dashboard/dashboard.service");
 
-const showSummary = async (req, res, next) => {
+const getSummary = async (req, res, next) => {
   try {
-    const summary = await dashboardService.getDashboardSummary(req.user.id);
+    const dashboard = await dashboardService.getDashboard(req.user.id);
 
     return res.status(200).json({
-      summary,
+      dashboard,
     });
   } catch (error) {
     next(error);
@@ -13,5 +13,5 @@ const showSummary = async (req, res, next) => {
 };
 
 module.exports = {
-  showSummary,
+  getSummary,
 };

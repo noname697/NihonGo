@@ -4,9 +4,9 @@ const {
   sequelize,
   StudyCharacter,
   UserCharacterProgress,
-} = require("../../models");
+} = require("../../../models");
 
-const createError = require("../utils/createError");
+const createError = require("../../utils/createError");
 
 const normalizeAnswer = (answer) => {
   return String(answer || "")

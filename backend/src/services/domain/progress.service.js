@@ -6,9 +6,9 @@ const {
   ExerciseOption,
   CourseModule,
   sequelize,
-} = require("../../models");
+} = require("../../../models");
 
-const createError = require("../utils/createError");
+const createError = require("../../utils/createError");
 
 const normalizeAnswer = (answer) => {
   return String(answer || "")
