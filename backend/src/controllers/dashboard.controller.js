@@ -12,6 +12,17 @@ const getSummary = async (req, res, next) => {
   }
 };
 
+const getV2 = async (req, res, next) => {
+  try {
+    const dashboard = await dashboardService.getDashboard(req.user.id);
+
+    return res.status(200).json(dashboard);
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getSummary,
+  getV2,
 };
