@@ -1,4 +1,4 @@
-const build = ({ lastLesson, quickStats }) => {
+const build = ({ lastLesson, quickStats, recommendation }) => {
   return {
     continueLearning: lastLesson
       ? {
@@ -35,6 +35,7 @@ const build = ({ lastLesson, quickStats }) => {
         icon: "cards",
       },
     ],
+    recommendation,
   };
 };
 

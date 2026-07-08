@@ -1,6 +1,7 @@
+const { Op } = require("sequelize");
+
 const {
   Lesson,
-  Exercise,
   UserLessonProgress,
   UserExerciseProgress,
   UserCharacterProgress,
@@ -38,7 +39,7 @@ const getQuickStats = async (userId) => {
       where: {
         user_id: userId,
         mastery_score: {
-          [require("sequelize").Op.gte]: 80,
+          [Op.gte]: 80,
         },
       },
     }),

@@ -1,4 +1,10 @@
-const { UserLessonProgress, Lesson, CourseModule } = require("../../../models");
+// service/domain/lesson-progress.service.js
+const {
+  CourseModule,
+  Lesson,
+  Exercise,
+  UserLessonProgress,
+} = require("../../../models");
 
 const getLastStudiedLesson = async (userId) => {
   return UserLessonProgress.findOne({
