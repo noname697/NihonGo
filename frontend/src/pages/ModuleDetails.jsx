@@ -14,7 +14,7 @@ import { ProgressBar } from "../components/ui/ProgressBar";
 import { LessonList } from "../components/features/modules/LessonList";
 
 export const ModuleDetails = () => {
-    const { id } = useParams();
+  const { id } = useParams();
 
   const [moduleData, setModuleData] = useState(null);
   const [summary, setSummary] = useState(null);

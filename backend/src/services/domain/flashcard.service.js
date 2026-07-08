@@ -158,7 +158,7 @@ const updateDeck = async (userId, deckId, data) => {
     throw createError("Deck title cannot be empty", 400);
   }
 
-  await FlashcardDeck.update({
+  await deck.update({
     title: title ?? deck.title,
     description: description ?? deck.description,
     is_public: is_public !== undefined ? Boolean(is_public) : deck.is_public,

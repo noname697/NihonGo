@@ -13,7 +13,7 @@ const initialState = {
 
 export const InteractiveExerciseCard = ({ exercise, onAnswered }) => {
   const hasOptions =
-    Array.isArray(exercise.option) && exercise.option.length > 0;
+    Array.isArray(exercise.options) && exercise.options.length > 0;
 
   const [selectedAnswer, setSelectedAnswer] = useState("");
   const [typedAnswer, setTypedAnswer] = useState("");

@@ -6,7 +6,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { getMe, loginUser } from "../api/auth.api";
+import { getMe, loginUser, registerUser } from "../api/auth.api";
 
 const AuthContext = createContext(null);
 
@@ -44,7 +44,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const register = async (formData) => {
-    const data = await register(formData);
+    const data = await registerUser(formData);
 
     localStorage.setItem("@NihonGo:token", data.token);
     setUser(data.user);
