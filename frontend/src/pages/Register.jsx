@@ -10,7 +10,7 @@ const initialState = {
   error: null,
 };
 
-export const Register = () => {
+const Register = () => {
   const navigate = useNavigate();
   const { register, isAuthenticated } = useAuth();
 
@@ -118,3 +118,5 @@ export const Register = () => {
     </AuthLayout>
   );
 };
+
+export default Register;

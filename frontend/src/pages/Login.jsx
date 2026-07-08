@@ -10,7 +10,7 @@ const initialState = {
   error: null,
 };
 
-export const Login = () => {
+const Login = () => {
   const navigate = useNavigate();
   const { login, isAuthenticated } = useAuth();
 
@@ -87,3 +87,5 @@ export const Login = () => {
     </AuthLayout>
   );
 };
+
+export default Login;

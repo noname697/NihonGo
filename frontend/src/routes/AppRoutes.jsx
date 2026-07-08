@@ -1,16 +1,16 @@
 import { createBrowserRouter } from "react-router";
 import { AppLayout } from "../components/layout/AppLayout";
-import { NotFound } from "../pages/NotFound";
-import { Landing } from "../pages/Landing";
-import { Login } from "../pages/Login";
-import { Register } from "../pages/Register";
+import NotFound from "../pages/NotFound";
+import Landing from "../pages/Landing";
+import Login from "../pages/Login";
+import Register from "../pages/Register";
 import { ProtectedRoute } from "./ProtectedRoute";
-import { Modules } from "../pages/Modules";
-import { Dashboard } from "../pages/Dashboard";
-import { Trainer } from "../pages/Trainer";
-import { Flashcards } from "../pages/Flashcards";
-import { ModuleDetails } from "../pages/ModuleDetails";
-import { LessonDetails } from "../pages/LessonDetails";
+import Modules from "../pages/Modules";
+import Dashboard from "../pages/Dashboard";
+import Trainer from "../pages/Trainer";
+import Flashcards from "../pages/Flashcards";
+import ModuleDetails from "../pages/ModuleDetails";
+import LessonDetails from "../pages/LessonDetails";
 
 const ProtectedDashboard = () => {
   return (

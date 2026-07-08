@@ -10,7 +10,7 @@ import { ErrorState } from "../components/ui/ErrorState";
 import { LoadingState } from "../components/ui/LoadingState";
 import { PageHeader } from "../components/ui/PageHeader";
 
-export const LessonDetails = () => {
+const LessonDetails = () => {
   const { id } = useParams();
 
   const [lesson, setLesson] = useState(null);
@@ -134,3 +134,5 @@ export const LessonDetails = () => {
     </div>
   );
 };
+
+export default LessonDetails;

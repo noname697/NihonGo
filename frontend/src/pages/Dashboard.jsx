@@ -5,7 +5,7 @@ import RecentActivityCard from "../components/dashboard/RecentActivityCard";
 import RecommendedLessons from "../components/dashboard/RecommendedLessons";
 import { useDashboard } from "../hooks/useDashboard";
 
-export const Dashboard = () => {
+const Dashboard = () => {
   const { data, isLoading } = useDashboard();
 
   if (isLoading) {
@@ -32,3 +32,5 @@ export const Dashboard = () => {
     </main>
   );
 };
+
+export default Dashboard;

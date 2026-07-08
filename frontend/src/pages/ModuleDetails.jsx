@@ -13,7 +13,7 @@ import { Badge } from "../components/ui/Badge";
 import { ProgressBar } from "../components/ui/ProgressBar";
 import { LessonList } from "../components/features/modules/LessonList";
 
-export const ModuleDetails = () => {
+const ModuleDetails = () => {
   const { id } = useParams();
 
   const [moduleData, setModuleData] = useState(null);
@@ -119,3 +119,5 @@ export const ModuleDetails = () => {
     </div>
   );
 };
+
+export default ModuleDetails;

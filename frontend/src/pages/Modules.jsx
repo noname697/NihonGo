@@ -7,7 +7,7 @@ import { PageHeader } from "../components/ui/PageHeader";
 import { EmptyState } from "../components/ui/EmptyState";
 import { ModuleCard } from "../components/features/modules/ModuleCard";
 
-export const Modules = () => {
+const Modules = () => {
   const [modules, setModules] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -67,3 +67,5 @@ export const Modules = () => {
     </div>
   );
 };
+
+export default Modules;

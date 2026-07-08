@@ -1,7 +1,7 @@
 import { Link } from "react-router";
 import { Input } from "../components/ui/Input";
 
-export const Landing = () => {
+const Landing = () => {
   return (
     <div className="">
       <div>
@@ -33,3 +33,5 @@ export const Landing = () => {
     </div>
   );
 };
+
+export default Landing;
