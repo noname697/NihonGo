@@ -1,10 +1,11 @@
+import ContinueLearningCard from "../components/dashboard/ContinueLearningCard";
+import DailyGoalCard from "../components/dashboard/DailyGoalCard";
 import QuickStats from "../components/dashboard/QuickStats";
-import { useAuth } from "../contexts/AuthContext";
+import RecentActivityCard from "../components/dashboard/RecentActivityCard";
+import RecommendedLessons from "../components/dashboard/RecommendedLessons";
 import { useDashboard } from "../hooks/useDashboard";
 
 export const Dashboard = () => {
-  const { user } = useAuth();
-
   const { data, isLoading } = useDashboard();
 
   if (isLoading) {
@@ -16,8 +17,18 @@ export const Dashboard = () => {
   }
 
   return (
-    <div className="space-y-8">
+    <main className="mx-auto flex w-full max-w-7xl flex-col gap-8 p-8">
+      <ContinueLearningCard lesson={data.continueLearning} />
+
       <QuickStats stats={data.quickStats} />
-    </div>
+
+      <section className="grid">
+        <DailyGoalCard />
+
+        <RecentActivityCard />
+      </section>
+
+      <RecommendedLessons />
+    </main>
   );
 };
