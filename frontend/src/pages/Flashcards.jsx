@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import {
+  createCard,
   createDeck,
   getDecks,
   getDueCards,
@@ -12,91 +13,181 @@ import { LoadingState } from "../components/ui/LoadingState";
 import { SubmitButton } from "../components/ui/SubmitButton";
 import { EmptyState } from "../components/ui/EmptyState";
 
+const parseProgress = (data) => {
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.progress)) return data.progress;
+  return [];
+};
+
 const Flashcards = () => {
-  const [decks, setDecks] = useState([]);
+ const [decks, setDecks] = useState([]);
+  const [dueCards, setDueCards] = useState([]);
+  const [progress, setProgress] = useState([]);
+ 
+  const [selectedDeckId, setSelectedDeckId] = useState("");
   const [deckTitle, setDeckTitle] = useState("");
   const [deckDescription, setDeckDescription] = useState("");
-
-  const [dueCards, setDueCards] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
+ 
+  const [newCardDeckId, setNewCardDeckId] = useState("");
+  const [cardFrontText, setCardFrontText] = useState("");
+  const [cardBackText, setCardBackText] = useState("");
+  const [cardExampleSentence, setCardExampleSentence] = useState("");
+  const [cardNotes, setCardNotes] = useState("");
+ 
+  const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [showAnswer, setShowAnswer] = useState(false);
-
-  const [progress, setProgress] = useState([]);
-
-  const [isLoading, setIsLoading] = useState(true);
+ 
+  const [isLoadingPage, setIsLoadingPage] = useState(true);
+  const [isCreatingDeck, setIsCreatingDeck] = useState(false);
+  const [isCreatingCard, setIsCreatingCard] = useState(false);
+  const [isReviewing, setIsReviewing] = useState(false);
   const [error, setError] = useState(null);
 
   const currentCard = useMemo(
-    () => dueCards[currentIndex] || null,
-    [dueCards, currentIndex],
+    () => dueCards[currentCardIndex] || null,
+    [dueCards, currentCardIndex],
   );
 
-  const loadAll = async () => {
-    try {
-      setError(null);
-      setIsLoading(true);
-      const [decksData, dueData, progressData] = await Promise.all([
-        getDecks(),
-        getDueCards({ limit: 20 }),
-        getFlashcardProgress(),
-      ]);
+  const loadDecks = async () => {
+    const data = await getDecks();
+    const nextDecks = data?.decks || [];
+    setDecks(nextDecks);
 
-      setDecks(decksData.decks || []);
-      setDueCards(dueData.cards || []);
-      setProgress(progressData || []);
-      setCurrentIndex(0);
-      setShowAnswer(false);
+    if (!newCardDeckId && nextDecks.length > 0) {
+      setNewCardDeckId(String(nextDecks[0].id));
+    }
+
+    return nextDecks;
+  };
+
+  const loadDueCards = async (deckId) => {
+    const data = await getDueCards(
+      deckId ? { deck_id: deckId, limit: 50 } : { limit: 50 },
+    );
+    const cards = data?.cards || [];
+    setDueCards(cards);
+    setCurrentCardIndex(0);
+    setShowAnswer(false);
+  };
+
+  const loadProgress = async () => {
+    const data = await getFlashcardProgress();
+    setProgress(parseProgress(data));
+  };
+
+  const loadPageData = async () => {
+    try {
+      setIsLoadingPage(true);
+      setError(null);
+
+      await Promise.all([
+        loadDecks(),
+        loadDueCards(selectedDeckId),
+        loadProgress(),
+      ]);
     } catch (error) {
       setError(getApiErrorMessage(error));
     } finally {
-      setIsLoading(false);
+      setIsLoadingPage(false);
     }
   };
 
-  const onCreateDeck = async (event) => {
+  useEffect(() => {
+    loadPageData();
+  }, []);
+
+  useEffect(() => {
+    if (isLoadingPage) return;
+
+    const syncDueCards = async () => {
+      try {
+        await loadDueCards(selectedDeckId);
+      } catch (error) {
+        setError(getApiErrorMessage(error));
+      }
+    };
+
+    syncDueCards();
+  }, [selectedDeckId]);
+
+  const handleCreateDeck = async (event) => {
     event.preventDefault();
-    if (!deckTitle.trim()) return;
 
     try {
+      setIsCreatingDeck(true);
       setError(null);
 
       await createDeck({
-        title: deckTitle.trim(),
-        description: deckDescription.trim() || null,
+        title: deckTitle,
+        description: deckDescription || null,
         is_public: false,
       });
 
       setDeckTitle("");
       setDeckDescription("");
-      await loadAll();
+
+      const nextDecks = await loadDecks();
+      if (nextDecks.length > 0) {
+        setSelectedDeckId((prev) => prev || String(nextDecks[0].id));
+      }
     } catch (error) {
       setError(getApiErrorMessage(error));
+    } finally {
+      setIsCreatingDeck(false);
     }
   };
 
-  const onReview = async (isCorrect) => {
+  const handleCreateCard = async (event) => {
+    event.preventDefault();
+
+    try {
+      setIsCreatingCard(true);
+      setError(null);
+
+      await createCard(newCardDeckId, {
+        front_text: cardFrontText,
+        back_text: cardBackText,
+        example_sentence: cardExampleSentence || null,
+        notes: cardNotes || null,
+      });
+
+      setCardFrontText("");
+      setCardBackText("");
+      setCardExampleSentence("");
+      setCardNotes("");
+
+      await Promise.all([
+        loadDecks(),
+        loadDueCards(selectedDeckId),
+        loadProgress(),
+      ]);
+    } catch (error) {
+      setError(getApiErrorMessage(error));
+    } finally {
+      setIsCreatingCard(false);
+    }
+  };
+
+  const handleReview = async (isCorrect) => {
     if (!currentCard) return;
 
     try {
+      setIsReviewing(true);
       setError(null);
 
       await reviewCard(currentCard.id, isCorrect);
 
-      const isLast = currentIndex >= dueCards.length - 1;
-      if (isLast) {
-        await loadAll();
-      } else {
-        setCurrentIndex((prev) => prev + 1);
-        setShowAnswer(false);
-      }
+      await Promise.all([loadDueCards(selectedDeckId), loadProgress()]);
     } catch (error) {
       setError(getApiErrorMessage(error));
+    } finally {
+      setIsReviewing(false);
     }
   };
 
-  useEffect(() => {
-    loadAll();
-  }, []);
+  if (isLoadingPage) {
+    return <LoadingState message="Loading flashcards..." />;
+  }
 
   return (
     <div>
@@ -112,151 +203,211 @@ const Flashcards = () => {
         </div>
       )}
 
-      {isLoading ? (
-        <LoadingState message="Loading flashcards..." />
-      ) : (
-        <>
-          <section className="rounded-3xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
-            <h2 className="text-lg font-black text-zinc-950 dark:text-white">
-              Create deck
-            </h2>
+      <section className="rounded-3xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
+        <h2 className="text-lg font-black text-zinc-950 dark:text-white">
+          Create deck
+        </h2>
 
-            <form
-              onSubmit={onCreateDeck}
-              className="mt-4 grid gap-3 md:grid-cols-3"
+        <form
+          onSubmit={handleCreateDeck}
+          className="mt-4 grid gap-3 md:grid-cols-3"
+        >
+          <input
+            className="rounded-xl border border-zinc-200 bg-white px-3 py-2 dark:border-zinc-800 dark:bg-zinc-950"
+            placeholder="Deck title"
+            value={deckTitle}
+            onChange={(e) => setDeckTitle(e.target.value)}
+          />
+          <input
+            className="rounded-xl border border-zinc-200 bg-white px-3 py-2 dark:border-zinc-800 dark:bg-zinc-950"
+            placeholder="Description (optional)"
+            value={deckDescription}
+            onChange={(e) => setDeckDescription(e.target.value)}
+          />
+          <SubmitButton loadingText="Creating..." disabled={isCreatingDeck}>
+            Create deck
+          </SubmitButton>
+        </form>
+
+        <div className="mt-4 space-y-2">
+          {decks.map((deck) => (
+            <button
+              key={deck.id}
+              type="button"
+              onClick={() => setSelectedDeckId(String(deck.id))}
+              className={`block w-full rounded-xl border px-4 py-3 text-left transition ${String(deck.id) === selectedDeckId ? "border-nihon-red bg-red-50 dark:border-red-900 dark:bg-red-950/30" : "border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900"}`}
             >
-              <input
-                className="rounded-xl border border-zinc-200 bg-white px-3 py-2 dark:border-zinc-800 dark:bg-zinc-950"
-                placeholder="Deck title"
-                value={deckTitle}
-                onChange={(e) => setDeckTitle(e.target.value)}
-              />
-              <input
-                className="rounded-xl border border-zinc-200 bg-white px-3 py-2 dark:border-zinc-800 dark:bg-zinc-950"
-                placeholder="Description (optional)"
-                value={deckDescription}
-                onChange={(e) => setDeckDescription(e.target.value)}
-              />
-              <SubmitButton
-                loadingText="Creating..."
-                disabled={!deckTitle.trim()}
-              >
-                Create deck
-              </SubmitButton>
-            </form>
+              <p className="font-bold text-zinc-950 dark:text-white">
+                {deck.title}
+              </p>
+              <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                {deck.cards_count} cards
+              </p>
+            </button>
+          ))}
 
-            <div className="mt-4">
-              {decks.length === 0 ? (
-                <EmptyState
-                  title="No decks"
-                  description="Create your first deck above."
-                />
+          {decks.length === 0 && (
+            <EmptyState
+              title="No decks yet"
+              description="Create your first deck deck."
+            />
+          )}
+        </div>
+      </section>
+
+      <section className="mt-6 rounded-3xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
+        <h2 className="text-xl font-black text-zinc-950 dark:text-white">
+          Add card
+        </h2>
+
+        {decks.length === 0 ? (
+          <EmptyState
+            title="Create a deck first"
+            description="You need at least one deck to add cards."
+          />
+        ) : (
+          <form onSubmit={handleCreateCard} className="mt-4 space-y-3">
+            <select
+              value={newCardDeckId}
+              onChange={(event) => setNewCardDeckId(event.target.value)}
+              className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm text-zinc-950 dark:border-zinc-800 dark:bg-zinc-950 dark:text-white"
+              required
+            >
+              {decks.map((deck) => (
+                <option key={deck.id} value={deck.id}>
+                  {deck.title}
+                </option>
+              ))}
+            </select>
+
+            <input
+              value={cardFrontText}
+              onChange={(event) => setCardFrontText(event.target.value)}
+              className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm text-zinc-950 dark:border-zinc-800 dark:bg-zinc-950 dark:text-white"
+              placeholder="Front text (question)"
+              required
+            />
+
+            <input
+              value={cardBackText}
+              onChange={(event) => setCardBackText(event.target.value)}
+              className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm text-zinc-950 dark:border-zinc-800 dark:bg-zinc-950 dark:text-white"
+              placeholder="Back text (answer)"
+              required
+            />
+
+            <input
+              value={cardExampleSentence}
+              onChange={(event) => setCardExampleSentence(event.target.value)}
+              className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm text-zinc-950 dark:border-zinc-800 dark:bg-zinc-950 dark:text-white"
+              placeholder="Example sentence (optional)"
+            />
+
+            <input
+              value={cardNotes}
+              onChange={(event) => setCardNotes(event.target.value)}
+              className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm text-zinc-950 dark:border-zinc-800 dark:bg-zinc-950 dark:text-white"
+              placeholder="Notes (optional)"
+            />
+
+            <SubmitButton
+              loadingText="Creating card..."
+              disabled={isCreatingCard}
+            >
+              Add Card
+            </SubmitButton>
+          </form>
+        )}
+      </section>
+
+      <section className="mt-6 rounded-3xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
+        <h2 className="text-lg font-black text-zinc-950 dark:text-white">
+          Due review
+        </h2>
+
+        {currentCard ? (
+          <div className="mt-4 rounded-2xl border border-zinc-200 bg-zinc-50 p-5 dark:border-zinc-800 dark:bg-zinc-950">
+            <p className="text-sm text-zinc-500 dark:text-zinc-400">
+              Card {currentCardIndex + 1} of {dueCards.length}
+            </p>
+            <p className="mt-2 text-2xl font-black text-zinc-950 dark:text-white">
+              {currentCard.front_text}
+            </p>
+
+            {showAnswer && (
+              <p className="mt-4 text-lg font-bold text-nihon-red">
+                {currentCard.back_text}
+              </p>
+            )}
+
+            <div className="mt-5 flex flex-wrap gap-3">
+              {!showAnswer ? (
+                <button
+                  type="button"
+                  onClick={() => setShowAnswer(true)}
+                  className="rounded-xl bg-zinc-900 px-4 py-2 text-sm font-bold text-white transition hover:bg-zinc-700 dark:bg-zinc-200 dark:text-zinc-950 dark:hover:bg-white"
+                >
+                  Show answer
+                </button>
               ) : (
-                <div className="grid gap-2">
-                  {decks.map((deck) => (
-                    <div
-                      key={deck.id}
-                      className="rounded-xl border border-zinc-200 px-4 py-3 dark:border-zinc-800"
-                    >
-                      <p className="font-bold">{deck.title}</p>
-                      <p className="text-sm">{deck.cards_count} cards</p>
-                    </div>
-                  ))}
-                </div>
+                <>
+                  <button
+                    type="button"
+                    disabled={isReviewing}
+                    onClick={() => handleReview(true)}
+                    className="rounded-xl bg-green-600 px-4 py-2 text-sm font-bold text-white transition hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-70"
+                  >
+                    {isReviewing ? "Saving..." : "I got it"}
+                  </button>
+                  <button
+                    type="button"
+                    disabled={isReviewing}
+                    onClick={() => handleReview(false)}
+                    className="rounded-xl bg-red-600 px-4 py-2 text-sm font-bold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-70"
+                  >
+                    {isReviewing ? "Saving..." : "I missed"}
+                  </button>
+                </>
               )}
             </div>
-          </section>
+          </div>
+        ) : (
+          <EmptyState
+            title="No pending cards"
+            description="Add cards to a deck. New cards will appear here for review."
+          />
+        )}
+      </section>
 
-          <section className="mt-6 rounded-3xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
-            <h2 className="text-lg font-black text-zinc-950 dark:text-white">
-              Due review
-            </h2>
+      <section className="mt-6 rounded-3xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
+        <h2 className="text-xl font-black text-zinc-950 dark:text-white">
+          Review progress
+        </h2>
 
-            {!currentCard ? (
-              <EmptyState
-                title="No pending cards"
-                description="You are up to date with your review."
-              />
-            ) : (
-              <div className="mt-4">
-                <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                  Card {currentIndex + 1} of {dueCards.length}
+        {progress.length > 0 ? (
+          <div className="mt-4 space-y-2">
+            {progress.slice(0, 10).map((item) => (
+              <div
+                key={`${item.flashcard_id}-${item.due_date}`}
+                className="rounded-xl border border-zinc-200 px-4 py-3 dark:border-zinc-800"
+              >
+                <p className="font-bold text-zinc-950 dark:text-white">
+                  {item.flashcard?.front_text || "Card"}
                 </p>
-
-                <div className="mt-3 rounded-2xl border border-zinc-200 bg-zinc-50 p-5 dark:border-zinc-800 dark:bg-zinc-950">
-                  <p className="text-xs font-bold text-zinc-500">
-                    {currentCard.deck?.title}
-                  </p>
-                  <p className="mt-2 text-2xl font-black">
-                    {currentCard.front_text}
-                  </p>
-
-                  {showAnswer && (
-                    <p className="mt-4 text-lg text-nihon-red">
-                      {currentCard.back_text}
-                    </p>
-                  )}
-
-                  {!showAnswer ? (
-                    <button
-                      type="button"
-                      onClick={() => setShowAnswer(true)}
-                      className="mt-5 rounded-xl bg-zinc-900 px-4 py-2 text-sm font-bold text-white hover:bg-zinc-700"
-                    >
-                      Show answer
-                    </button>
-                  ) : (
-                    <div className="mt-5 flex gap-3">
-                      <button
-                        type="button"
-                        onClick={() => onReview(true)}
-                        className="rounded-xl bg-green-600 px-4 py-2  text-sm font-bold text-white hover:bg-green-700"
-                      >
-                        I got it
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => onReview(false)}
-                        className="rounded-xl bg-red-600 px-4 py-2  text-sm font-bold text-white hover:bg-red-700"
-                      >
-                        I missed
-                      </button>
-                    </div>
-                  )}
-                </div>
+                <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                  Mastery: {Number(item.mastery_score || 0).toFixed(2)}% •
+                  Reviews: {item.review_count}
+                </p>
               </div>
-            )}
-          </section>
-
-          <section className="mt-6 rounded-3xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
-            <h2 className="text-lg font-black text-zinc-950 dark:text-white">
-              Review progress
-            </h2>
-
-            {progress.length === 0 ? (
-              <EmptyState
-                title="No progress yet"
-                description="Review cards to generate progress."
-              />
-            ) : (
-              <div className="mt-4 grid gap-2">
-                {progress.slice(0, 10).map((item) => (
-                  <div
-                    key={item.flashcard_id}
-                    className="rounded-xl border border-zinc-200 px-4 py-3 dark:border-zinc-800"
-                  >
-                    <p className=" font-bold">{item.flashcard?.front_text}</p>
-                    <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                      Mastery: {Number(item.mastery_score || 0).toFixed(2)}% |
-                      Reviews: {item.review_count}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            )}
-          </section>
-        </>
-      )}
+            ))}
+          </div>
+        ) : (
+          <EmptyState
+            title="No progress yet"
+            description="Review cards to generate progress."
+          />
+        )}
+      </section>
     </div>
   );
 };

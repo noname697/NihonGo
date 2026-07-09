@@ -10,6 +10,14 @@ export const createDeck = async (payload) => {
   return response.data;
 };
 
+export const createCard = async (deckId, payload) => {
+  const response = await api.post(
+    `/api/flashcards/decks/${deckId}/cards`,
+    payload,
+  );
+  return response.data;
+};
+
 export const getDueCards = async (params = {}) => {
   const response = await api.get("/api/flashcards/due", { params });
   return response.data;
