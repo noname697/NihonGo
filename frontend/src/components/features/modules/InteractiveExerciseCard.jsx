@@ -23,7 +23,6 @@ export const InteractiveExerciseCard = ({ exercise, onAnswered }) => {
   const getLessonProgressFromResponse = (data) => {
     return (
       data?.lesson_progress ??
-      data?.lessonProgress ??
       data?.progress ??
       data?.data?.lesson_progress ??
       null
@@ -205,8 +204,7 @@ const LessonProgressMini = ({ progress }) => {
             Lesson progress
           </p>
           <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-            {progress.completed_exercises_count} of {progress.total_exercises}{" "}
-            correct
+            {progress.correct_exercises} of {progress.total_exercises} correct
           </p>
         </div>
 
