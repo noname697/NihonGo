@@ -32,12 +32,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: false,
         defaultValue: 0,
-        field: "wrong_attemps",
       },
       last_answer: {
         type: DataTypes.STRING,
         allowNull: true,
-        field: "last_awnser",
       },
       last_result: {
         type: DataTypes.BOOLEAN,

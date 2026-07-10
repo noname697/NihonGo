@@ -11,7 +11,6 @@ const progressRouter = require("./routes/progress.routes");
 const trainerRouter = require("./routes/trainer.routes");
 const flashcardRouter = require("./routes/flashcard.routes");
 const dashboardRouter = require("./routes/dashboard.routes");
-const lessonRoutes = require("./routes/lesson.routes")
 
 const { apiLimiter } = require("./middlewares/rateLimit.middleware");
 const notFoundMiddleware = require("./middlewares/notFound.middleware");
@@ -43,7 +42,6 @@ app.use("/api/progress", progressRouter);
 app.use("/api/trainer", trainerRouter);
 app.use("/api/flashcards", flashcardRouter);
 app.use("/api/dashboard", dashboardRouter);
-app.use("/api/lessons", lessonRoutes)
 
 app.use(notFoundMiddleware);
 app.use(errorMiddleware);

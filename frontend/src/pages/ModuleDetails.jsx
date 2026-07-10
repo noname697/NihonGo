@@ -21,23 +21,23 @@ const ModuleDetails = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const loadModule = async () => {
-    try {
-      setIsLoading(true);
-      setError(null);
-
-      const data = await getModuleProgress(id);
-
-      setModuleData(data.module);
-      setSummary(data.summary);
-    } catch (error) {
-      setError(getApiErrorMessage(error));
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const loadModule = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        const data = await getModuleProgress(id);
+
+        setModuleData(data.module);
+        setSummary(data.summary);
+      } catch (error) {
+        setError(getApiErrorMessage(error));
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     loadModule();
   }, [id]);
 
@@ -50,13 +50,7 @@ const ModuleDetails = () => {
   }
 
   if (error) {
-    return (
-      <ErrorState
-        title="Could not load module"
-        message={error}
-        onRetry={loadModule}
-      />
-    );
+    return <ErrorState title="Could not load module" message={error} />;
   }
 
   return (

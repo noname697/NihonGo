@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   answerCharacter,
   getRandomCharacters,
@@ -30,7 +30,7 @@ const Trainer = () => {
     return characters[currentIndex] || null;
   }, [characters, currentIndex]);
 
-  const loadProgress = async () => {
+  const loadProgress = useCallback(async () => {
     try {
       setIsLoadingProgress(true);
       const params = { type };
@@ -43,7 +43,7 @@ const Trainer = () => {
     } finally {
       setIsLoadingProgress(false);
     }
-  };
+  }, [type, jlptLevel]);
 
   const startPractice = async () => {
     try {
@@ -93,7 +93,7 @@ const Trainer = () => {
 
   useEffect(() => {
     loadProgress();
-  }, [type, jlptLevel]);
+  }, [loadProgress]);
 
   return (
     <div>

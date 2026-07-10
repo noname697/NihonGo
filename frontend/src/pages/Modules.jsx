@@ -36,13 +36,7 @@ const Modules = () => {
   }
 
   if (error) {
-    return (
-      <ErrorState
-        title="Could not load modules"
-        message={error}
-        onRetry={loadModules}
-      />
-    );
+    return <ErrorState title="Could not load modules" message={error} />;
   }
 
   return (

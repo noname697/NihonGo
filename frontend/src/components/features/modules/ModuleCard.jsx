@@ -3,7 +3,7 @@ import { Badge } from "../../ui/Badge";
 import { Card } from "../../ui/Card";
 import { ProgressBar } from "../../ui/ProgressBar";
 
-export const ModuleCard = ({ module, progress }) => {
+export const ModuleCard = ({ module }) => {
   return (
     <Card className="transition hover:-translate-y-1 hover:shadow-md">
       <div className="mb-5 flex items-center justify-between gap-4">

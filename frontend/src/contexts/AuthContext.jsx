@@ -26,12 +26,12 @@ export const AuthProvider = ({ children }) => {
       const data = await getMe();
 
       setUser(data.user);
-    } catch (error) {
+    } catch {
       localStorage.removeItem("@NihonGo:token");
       setUser(null);
     } finally {
       setIsLoadingUser(false);
-    }
+    } 
   }, []);
 
   const login = async (credentials) => {
@@ -52,7 +52,7 @@ export const AuthProvider = ({ children }) => {
     return data;
   };
 
-  const logout = (formData) => {
+  const logout = () => {
     localStorage.removeItem("@NihonGo:token");
     setUser(null);
   };

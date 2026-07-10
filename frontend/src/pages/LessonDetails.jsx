@@ -51,13 +51,7 @@ const LessonDetails = () => {
   }
 
   if (error) {
-    return (
-      <ErrorState
-        title="Could not load lesson"
-        message={error}
-        onRetry={loadLesson}
-      />
-    );
+    return <ErrorState title="Could not load lesson" message={error} />;
   }
 
   return (

@@ -1,6 +1,6 @@
 import { Card } from "./Card";
 
-export const StatCard = ({ icon: Icon, title, value, description }) => {
+const StatCard = ({ icon: Icon, title, value, description }) => {
   return (
     <Card>
       <div className="flex items-center justify-between gap-4">
@@ -29,3 +29,5 @@ export const StatCard = ({ icon: Icon, title, value, description }) => {
     </Card>
   );
 };
+
+export default StatCard;

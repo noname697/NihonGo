@@ -30,5 +30,3 @@ export const ExercisePreview = ({ exercise }) => {
     </div>
   );
 };
-
-// TODO: Adaptar esse componente para responder o exercise

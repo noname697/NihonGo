@@ -22,7 +22,6 @@ const Dashboard = () => {
       <ErrorState
         title="Could not load dashboard"
         message="Please try again in a moment."
-        onRetry={refetch}
       />
     );
   }
