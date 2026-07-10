@@ -2,16 +2,19 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   createCard,
   createDeck,
+  deleteDeck,
+  getDeckById,
   getDecks,
   getDueCards,
   getFlashcardProgress,
   reviewCard,
+  updateDeck,
 } from "../api/flashcard.api";
-import { getApiErrorMessage } from "../utils/getApiErrorMessage";
-import { PageHeader } from "../components/ui/PageHeader";
-import { LoadingState } from "../components/ui/LoadingState";
-import { SubmitButton } from "../components/ui/SubmitButton";
 import { EmptyState } from "../components/ui/EmptyState";
+import { LoadingState } from "../components/ui/LoadingState";
+import { PageHeader } from "../components/ui/PageHeader";
+import { SubmitButton } from "../components/ui/SubmitButton";
+import { getApiErrorMessage } from "../utils/getApiErrorMessage";
 
 const parseProgress = (data) => {
   return data?.progress || [];
@@ -25,6 +28,19 @@ const Flashcards = () => {
   const [selectedDeckId, setSelectedDeckId] = useState("");
   const [deckTitle, setDeckTitle] = useState("");
   const [deckDescription, setDeckDescription] = useState("");
+
+  const [selectedDeck, setSelectedDeck] = useState(null);
+  const [isLoadingDeck, setIsLoadingDeck] = useState(false);
+
+  const [editingDeckTitle, setEditingDeckTitle] = useState("");
+  const [editingDeckDescription, setEditingDeckDescription] = useState("");
+
+  const [editingCardId, setEditingCardId] = useState(null);
+  const [editingCardFrontText, setEditingCardFrontText] = useState("");
+  const [editingCardBackText, setEditingCardBackText] = useState("");
+  const [editingCardExampleSentence, setEditingCardExampleSentence] =
+    useState("");
+  const [editingCardNotes, setEditingCardNotes] = useState("");
 
   const [newCardDeckId, setNewCardDeckId] = useState("");
   const [cardFrontText, setCardFrontText] = useState("");
@@ -56,6 +72,28 @@ const Flashcards = () => {
     }
 
     return nextDecks;
+  };
+
+  const loadSelectedDeck = async (deckId) => {
+    if (!deckId) {
+      setSelectedDeck(null);
+      return;
+    }
+
+    try {
+      setIsLoadingDeck(true);
+      setError(null);
+
+      const data = await getDeckById(deckId);
+
+      setSelectedDeck(data.deck);
+      setEditingDeckTitle(data.deck.title || "");
+      setEditingDeckDescription(data.deck.description || "");
+    } catch (error) {
+      setError(getApiErrorMessage(error));
+    } finally {
+      setIsLoadingDeck(false);
+    }
   };
 
   const loadDueCards = async (deckId) => {
@@ -183,6 +221,50 @@ const Flashcards = () => {
     }
   };
 
+  const handleUpdateDeck = async (event) => {
+    event.preventDefault();
+
+    if (!selectedDeck) return;
+
+    try {
+      setError(null);
+
+      await updateDeck(selectedDeck.id, {
+        title: editingDeckTitle,
+        description: editingDeckDescription || null,
+        is_public: selectedDeck.is_public,
+      });
+
+      await Promise.all([loadDecks(), loadSelectedDeck(selectedDeck.id)]);
+    } catch (error) {
+      setError(getApiErrorMessage(error));
+    }
+  };
+
+  const handleDeleteDeck = async () => {
+    if (!selectedDeck) return;
+
+    const confirmed = window.confirm(
+      `Delete "${selectedDeck.title}" and all its cards?`,
+    );
+
+    if (!confirmed) return;
+
+    try {
+      setError(null);
+
+      await deleteDeck(selectedDeck.id);
+
+      setSelectedDeck(null);
+      setSelectedDeckId("");
+      setNewCardDeckId("");
+
+      await Promise.all([loadDecks(), loadDueCards(""), loadProgress()]);
+    } catch (error) {
+      setError(getApiErrorMessage(error));
+    }
+  };
+
   if (isLoadingPage) {
     return <LoadingState message="Loading flashcards..." />;
   }
@@ -232,7 +314,11 @@ const Flashcards = () => {
             <button
               key={deck.id}
               type="button"
-              onClick={() => setSelectedDeckId(String(deck.id))}
+              onClick={() => {
+                const nextDeckId = String(deck.id);
+                setSelectedDeckId(nextDeckId);
+                loadSelectedDeck(nextDeckId);
+              }}
               className={`block w-full rounded-xl border px-4 py-3 text-left transition ${String(deck.id) === selectedDeckId ? "border-nihon-red bg-red-50 dark:border-red-900 dark:bg-red-950/30" : "border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900"}`}
             >
               <p className="font-bold text-zinc-950 dark:text-white">
@@ -251,6 +337,43 @@ const Flashcards = () => {
             />
           )}
         </div>
+
+        {selectedDeck && (
+          <form onSubmit={handleUpdateDeck} className="mt-5 space-y-3">
+            <h3 className="font-black">Edit selected deck</h3>
+
+            <input
+              value={editingDeckTitle}
+              onChange={(e) => setEditingDeckTitle(e.target.value)}
+              className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm text-zinc-950 dark:border-zinc-800 dark:bg-zinc-950 dark:text-white"
+              placeholder="Deck title"
+              required
+            />
+
+            <input
+              value={editingDeckDescription}
+              onChange={(e) => setEditingDeckDescription(e.target.value)}
+              className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm text-zinc-950 dark:border-zinc-800 dark:bg-zinc-950 dark:text-white"
+              placeholder="Description"
+            />
+
+            <div className="flex flex-wrap gap-3">
+              <button
+                type="submit"
+                className="rounded-xl bg-zinc-900 px-4 py-2 text-sm font-bold text-white transition hover:bg-zinc-700"
+              >
+                Save deck
+              </button>
+              <button
+                type="button"
+                onClick={handleDeleteDeck}
+                className="rounded-xl bg-red-600 px-4 py-2 text-sm font-bold text-white transition hover:bg-red-700"
+              >
+                Delete deck
+              </button>
+            </div>
+          </form>
+        )}
       </section>
 
       <section className="mt-6 rounded-3xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
