@@ -21,7 +21,7 @@ const getStartOfToday = () => {
 };
 
 const getQuickStats = async (userId) => {
-  const date = new Date();
+  const now = new Date();
 
   const reviewedRows = await FlashcardReview.findAll({
     where: {
