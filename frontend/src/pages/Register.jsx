@@ -97,7 +97,7 @@ const Register = () => {
           type="password"
           placeholder="At least 8 characters"
           autoComplete="new-password"
-          min-length={8}
+          minLength={8}
           required
         />
         <Input
@@ -107,7 +107,7 @@ const Register = () => {
           type="password"
           placeholder="Repeat your password"
           autoComplete="new-password"
-          min-length={8}
+          minLength={8}
           required
         />
 

@@ -9,6 +9,7 @@ import { PageHeader } from "../components/ui/PageHeader";
 import { EmptyState } from "../components/ui/EmptyState";
 import { LoadingState } from "../components/ui/LoadingState";
 import { SubmitButton } from "../components/ui/SubmitButton";
+import { CheckCircle, XCircle } from "lucide-react";
 
 const Trainer = () => {
   const [type, setType] = useState("hiragana");
@@ -84,7 +85,7 @@ const Trainer = () => {
     }
   };
 
-  const goNext = (event) => {
+  const goNext = () => {
     setTypedAnswer("");
     setLastResult(null);
     setCurrentIndex((prev) => prev + 1);
@@ -178,7 +179,7 @@ const Trainer = () => {
             <form onSubmit={submitAnswer} className="mt-5 space-y-4">
               <input
                 className="w-full rounded-2xl border border-zinc-200 bg-white px-4 py-3 text-sm dark:border-zinc-800 dark:bg-zinc-950"
-                placeholder="Digite sua resposta..."
+                placeholder="Type your answer..."
                 value={typedAnswer}
                 onChange={(e) => setTypedAnswer(e.target.value)}
               />
@@ -193,10 +194,13 @@ const Trainer = () => {
 
             {lastResult && (
               <div className="mt-5 rounded-2xl border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-800 dark:bg-zinc-950">
-                <p className="font-bold">
-                  {lastResult.result?.is_correct
-                    ? "✅ Correct"
-                    : "❌ Incorrect"}
+                <p className="flex items-center gap-2 font-bold">
+                  {lastResult.result?.is_correct ? (
+                    <CheckCircle size={18} className="text-green-600" />
+                  ) : (
+                    <XCircle size={18} className="text-red-600" />
+                  )}
+                  {lastResult.result?.is_correct ? "Correct" : "Incorrect"}
                 </p>
                 {!lastResult.result?.is_correct && (
                   <p className="mt-2 text-sm ">

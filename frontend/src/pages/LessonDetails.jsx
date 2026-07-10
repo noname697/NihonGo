@@ -20,13 +20,7 @@ const LessonDetails = () => {
   const [error, setError] = useState(null);
 
   const getLessonProgressFromResponse = (data) => {
-    return (
-      data?.lesson_progress ??
-      data?.lessonProgress ??
-      data?.progress ??
-      data?.data?.lesson_progress ??
-      null
-    );
+    return data?.lesson_progress ?? data?.progress ?? null;
   };
 
   const loadLesson = useCallback(async () => {
@@ -76,7 +70,11 @@ const LessonDetails = () => {
         Back to module
       </Link>
 
-      <PageHeader eyebrow={lesson?.module?.level} />
+      <PageHeader
+        eyebrow={lesson?.module?.level}
+        title={lesson?.title}
+        description={lesson?.description}
+      />
       <section className="rounded-4xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
         <h2 className="text-xl font-black text-zinc-950 dark:text-white">
           Lesson explanation
