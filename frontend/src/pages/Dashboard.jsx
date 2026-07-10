@@ -39,7 +39,7 @@ const Dashboard = () => {
         <RecentActivityCard activities={data?.recentActivity || []} />
       </section>
 
-      <RecommendedLessons recommendations={data?.recommendation} />
+      <RecommendedLessons recommendation={data?.recommendation} />
     </main>
   );
 };
