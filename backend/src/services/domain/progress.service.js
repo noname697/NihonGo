@@ -64,7 +64,7 @@ const recalculateLessonProgress = async (userId, lessonId, transaction) => {
       ? 0
       : Number(((correctExercises / totalExercises) * 100).toFixed(2));
 
-  const isCompleted = totalExercises > 0 && answeredExercises >= totalExercises;
+  const isCompleted = totalExercises > 0 && correctExercises >= totalExercises;
 
   const now = new Date();
 
@@ -191,7 +191,7 @@ const submitExerciseAnswer = async (userId, exerciseId, answer) => {
         explanation: exercise.explanation,
         attempts_count: exerciseProgress.attempts_count,
       },
-      lessonProgress: {
+      lesson_progress: {
         lesson_id: lessonProgress.lesson_id,
         total_exercises: lessonProgress.total_exercises,
         correct_exercises: lessonProgress.correct_exercises,
