@@ -1,7 +1,5 @@
-import api from "../api/api";
+import { getDashboardSummary } from "../api/dashboard.api";
 
 export const getDashboard = async () => {
-  const { data } = await api.get("/api/dashboard/v2");
-
-  return data;
+  return getDashboardSummary();
 };
