@@ -64,7 +64,7 @@ const Flashcards = () => {
     [dueCards, currentCardIndex],
   );
 
-  const loadDecks = async () => {
+  const loadDecks = useCallback(async () => {
     const data = await getDecks();
     const nextDecks = data?.decks || [];
     setDecks(nextDecks);
@@ -74,7 +74,7 @@ const Flashcards = () => {
     }
 
     return nextDecks;
-  };
+  }, [newCardDeckId]);
 
   const loadSelectedDeck = async (deckId) => {
     if (!deckId) {
@@ -98,7 +98,7 @@ const Flashcards = () => {
     }
   };
 
-  const loadDueCards = async (deckId) => {
+  const loadDueCards = useCallback(async (deckId) => {
     const data = await getDueCards(
       deckId ? { deck_id: deckId, limit: 50 } : { limit: 50 },
     );
@@ -106,12 +106,12 @@ const Flashcards = () => {
     setDueCards(cards);
     setCurrentCardIndex(0);
     setShowAnswer(false);
-  };
+  }, []);
 
-  const loadProgress = async () => {
+  const loadProgress = useCallback(async () => {
     const data = await getFlashcardProgress();
     setProgress(parseProgress(data));
-  };
+  }, []);
 
   const loadPageData = useCallback(async () => {
     try {
@@ -128,11 +128,11 @@ const Flashcards = () => {
     } finally {
       setIsLoadingPage(false);
     }
-  }, [selectedDeckId]);
+  }, [loadDecks, loadDueCards, loadProgress, selectedDeckId]);
 
   useEffect(() => {
     loadPageData();
-  }, []);
+  }, [loadPageData]);
 
   useEffect(() => {
     if (isLoadingPage) return;
@@ -146,7 +146,7 @@ const Flashcards = () => {
     };
 
     syncDueCards();
-  }, [selectedDeckId, isLoadingPage]);
+  }, [isLoadingPage, loadDueCards, selectedDeckId]);
 
   const handleCreateDeck = async (event) => {
     event.preventDefault();
@@ -330,7 +330,7 @@ const Flashcards = () => {
     setEditingCardNotes(card.notes || "");
   };
 
-  const cancelEditingCard = (card) => {
+  const cancelEditingCard = () => {
     setEditingCardId(null);
     setEditingCardFrontText("");
     setEditingCardBackText("");
