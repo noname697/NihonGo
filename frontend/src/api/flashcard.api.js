@@ -5,8 +5,23 @@ export const getDecks = async () => {
   return response.data;
 };
 
+export const getDeckById = async (id) => {
+  const response = await api.get(`/api/flashcards/decks/${id}`);
+  return response.data;
+};
+
 export const createDeck = async (payload) => {
   const response = await api.post("/api/flashcards/decks", payload);
+  return response.data;
+};
+
+export const updateDeck = async (id, payload) => {
+  const response = await api.put(`/api/flashcards/decks/${id}`, payload);
+  return response.data;
+};
+
+export const deleteDeck = async (id) => {
+  const response = await api.delete(`/api/flashcards/decks/${id}`);
   return response.data;
 };
 
@@ -15,6 +30,16 @@ export const createCard = async (deckId, payload) => {
     `/api/flashcards/decks/${deckId}/cards`,
     payload,
   );
+  return response.data;
+};
+
+export const updateCard = async (deckId, payload) => {
+  const response = await api.put(`/api/flashcards/cards/${deckId}`, payload);
+  return response.data;
+};
+
+export const deleteCard = async (deckId) => {
+  const response = await api.delete(`/api/flashcards/cards/${deckId}`);
   return response.data;
 };
 
