@@ -21,12 +21,7 @@ export const InteractiveExerciseCard = ({ exercise, onAnswered }) => {
   const answerToSubmit = hasOptions ? selectedAnswer : typedAnswer;
 
   const getLessonProgressFromResponse = (data) => {
-    return (
-      data?.lesson_progress ??
-      data?.progress ??
-      data?.data?.lesson_progress ??
-      null
-    );
+    return data?.lesson_progress ?? null;
   };
 
   const submitAnswerAction = async (previousState, formData) => {

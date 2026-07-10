@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   createCard,
   createDeck,
@@ -14,29 +14,27 @@ import { SubmitButton } from "../components/ui/SubmitButton";
 import { EmptyState } from "../components/ui/EmptyState";
 
 const parseProgress = (data) => {
-  if (Array.isArray(data)) return data;
-  if (Array.isArray(data?.progress)) return data.progress;
-  return [];
+  return data?.progress || [];
 };
 
 const Flashcards = () => {
- const [decks, setDecks] = useState([]);
+  const [decks, setDecks] = useState([]);
   const [dueCards, setDueCards] = useState([]);
   const [progress, setProgress] = useState([]);
- 
+
   const [selectedDeckId, setSelectedDeckId] = useState("");
   const [deckTitle, setDeckTitle] = useState("");
   const [deckDescription, setDeckDescription] = useState("");
- 
+
   const [newCardDeckId, setNewCardDeckId] = useState("");
   const [cardFrontText, setCardFrontText] = useState("");
   const [cardBackText, setCardBackText] = useState("");
   const [cardExampleSentence, setCardExampleSentence] = useState("");
   const [cardNotes, setCardNotes] = useState("");
- 
+
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [showAnswer, setShowAnswer] = useState(false);
- 
+
   const [isLoadingPage, setIsLoadingPage] = useState(true);
   const [isCreatingDeck, setIsCreatingDeck] = useState(false);
   const [isCreatingCard, setIsCreatingCard] = useState(false);
@@ -75,7 +73,7 @@ const Flashcards = () => {
     setProgress(parseProgress(data));
   };
 
-  const loadPageData = async () => {
+  const loadPageData = useCallback(async () => {
     try {
       setIsLoadingPage(true);
       setError(null);
@@ -90,7 +88,7 @@ const Flashcards = () => {
     } finally {
       setIsLoadingPage(false);
     }
-  };
+  }, [selectedDeckId]);
 
   useEffect(() => {
     loadPageData();
@@ -108,7 +106,7 @@ const Flashcards = () => {
     };
 
     syncDueCards();
-  }, [selectedDeckId]);
+  }, [selectedDeckId, isLoadingPage]);
 
   const handleCreateDeck = async (event) => {
     event.preventDefault();

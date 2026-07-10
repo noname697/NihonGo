@@ -136,7 +136,7 @@ const showReviewProgress = async (req, res, next) => {
   try {
     const progress = await flashcardService.getReviewProgress(req.user.id);
 
-    return res.status(200).json(progress);
+    return res.status(200).json({progress});
   } catch (error) {
     next(error);
   }

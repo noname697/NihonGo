@@ -7,7 +7,7 @@ import { ErrorState } from "../components/ui/ErrorState";
 import { useDashboard } from "../hooks/useDashboard";
 
 const Dashboard = () => {
-  const { data, isLoading, error, refetch } = useDashboard();
+  const { data, isLoading, error } = useDashboard();
 
   if (isLoading) {
     return (

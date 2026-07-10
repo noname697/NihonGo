@@ -954,17 +954,7 @@ Requires token.
       "review_count": 1,
       "mastery_score": 100,
       "due_date": "2026-06-30T00:00:00.000Z",
-      "last_reviewed_at": "2026-06-29T00:00:00.000Z",
-      "flashcard": {
-        "id": 1,
-        "front_text": "水",
-        "back_text": "Water",
-        "deck_id": 1,
-        "deck": {
-          "id": 1,
-          "title": "N5 Vocabulary"
-        }
-      }
+      "last_reviewed_at": "2026-06-29T00:00:00.000Z"
     }
   ]
 }
@@ -996,59 +986,40 @@ Requires token.
 
 ```json
 {
-  "summary": {
-    "modules_progress": [
-      {
-        "id": 1,
-        "level": "N5",
-        "title": "JLPT N5",
-        "description": "Basic Japanese content for beginners.",
-        "position": 1,
-        "total_lessons": 3,
-        "completed_lessons": 1,
-        "progress_percentage": 33.33
-      }
-    ],
-    "lesson_stats": {
-      "total_lessons": 3,
-      "started_lessons": 1,
-      "completed_lessons": 1,
-      "completion_percentage": 33.33,
-      "average_score": 100
-    },
-    "exercise_stats": {
-      "total_exercises": 3,
-      "answered_exercises": 1,
-      "correct_exercises": 1,
-      "accuracy_percentage": 100,
-      "completion_percentage": 33.33
-    },
-    "trainer_stats": {
-      "total_characters": 15,
-      "studied_characters": 1,
-      "mastered_characters": 1,
-      "study_percentage": 6.67,
-      "correct_attempts": 1,
-      "wrong_attempts": 0,
-      "accuracy_percentage": 100,
-      "average_mastery": 100
-    },
-    "flashcard_stats": {
-      "total_decks": 3,
-      "total_cards": 15,
-      "reviewed_cards": 1,
-      "due_cards": 14,
-      "review_completion_percentage": 6.67,
-      "correct_attempts": 1,
-      "wrong_attempts": 0,
-      "accuracy_percentage": 100,
-      "average_mastery": 100
-    },
-    "recent_activity": {
-      "recent_lessons": [],
-      "recent_characters": [],
-      "recent_flashcards": []
+  "continueLearning": {
+    "lessonId": 1,
+    "module": "N5",
+    "title": "Particle は",
+    "progress": 33,
+    "completed": false
+  },
+  "quickStats": [
+    {
+      "id": "lessons",
+      "label": "Lessons Completed",
+      "value": "1 / 3",
+      "icon": "book-open"
     }
+  ],
+  "dailyGoal": {
+    "target": 5,
+    "completed": 2,
+    "progress": 40,
+    "items": [
+      {
+        "id": "lessons",
+        "label": "Lessons studied",
+        "value": 1
+      }
+    ]
+  },
+  "recentActivity": [],
+  "recommendation": {
+    "type": "lesson",
+    "title": "Continue Particle は",
+    "description": "Resume where you left off",
+    "lessonId": 1,
+    "action": "/lessons/1"
   }
 }
 ```
