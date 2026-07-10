@@ -2,12 +2,14 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   createCard,
   createDeck,
+  deleteCard,
   deleteDeck,
   getDeckById,
   getDecks,
   getDueCards,
   getFlashcardProgress,
   reviewCard,
+  updateCard,
   updateDeck,
 } from "../api/flashcard.api";
 import { EmptyState } from "../components/ui/EmptyState";
@@ -196,6 +198,7 @@ const Flashcards = () => {
         loadDecks(),
         loadDueCards(selectedDeckId),
         loadProgress(),
+        selectedDeckId ? loadSelectedDeck(selectedDeckId) : Promise.resolve(),
       ]);
     } catch (error) {
       setError(getApiErrorMessage(error));
@@ -264,6 +267,78 @@ const Flashcards = () => {
       setError(getApiErrorMessage(error));
     }
   };
+
+  const handleUpdateCard = async (event) => {
+    event.preventDefault();
+
+    if (!editingCardId || !selectedDeck) return;
+
+    try {
+      setError(null);
+
+      await updateCard(editingCardId, {
+        front_text: editingCardFrontText,
+        back_text: editingCardBackText,
+        example_sentence: editingCardExampleSentence || null,
+        notes: editingCardNotes || null,
+      });
+
+      cancelEditingCard();
+
+      await Promise.all([
+        loadSelectedDeck(selectedDeck.id),
+        loadDueCards(selectedDeckId),
+        loadProgress(),
+      ]);
+    } catch (error) {
+      setError(getApiErrorMessage(error));
+    }
+  };
+
+  const handleDeleteCard = async (card) => {
+    if (!selectedDeck) return;
+
+    const confirmed = window.confirm(`Delete card "${card.front_text}"?`);
+
+    if (!confirmed || !selectedDeck) return;
+
+    try {
+      setError(null);
+
+      await deleteCard(card.id);
+
+      if (editingCardId === card.id) {
+        cancelEditingCard();
+      }
+
+      await Promise.all([
+        loadSelectedDeck(selectedDeck.id),
+        loadDecks(),
+        loadDueCards(selectedDeckId),
+        loadProgress(),
+      ]);
+    } catch (error) {
+      setError(getApiErrorMessage(error));
+    }
+  };
+
+  const startEditingCard = (card) => {
+    setEditingCardId(card.id);
+    setEditingCardFrontText(card.front_text || "");
+    setEditingCardBackText(card.back_text || "");
+    setEditingCardExampleSentence(card.example_sentence || "");
+    setEditingCardNotes(card.notes || "");
+  };
+
+  const cancelEditingCard = (card) => {
+    setEditingCardId(null);
+    setEditingCardFrontText("");
+    setEditingCardBackText("");
+    setEditingCardExampleSentence("");
+    setEditingCardNotes("");
+  };
+
+  // Render
 
   if (isLoadingPage) {
     return <LoadingState message="Loading flashcards..." />;
@@ -438,6 +513,128 @@ const Flashcards = () => {
               Add Card
             </SubmitButton>
           </form>
+        )}
+      </section>
+
+      <section className="mt-6 rounded-3xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
+        <h2 className="text-xl font-black text-zinc-950 dark:text-white">
+          Selected deck cards
+        </h2>
+        {!selectedDeck ? (
+          <EmptyState
+            title="No deck selected"
+            description="Choose a deck to view and manage its cards."
+          />
+        ) : isLoadingDeck ? (
+          <LoadingState message="Loading deck cards..." />
+        ) : selectedDeck.cards?.length > 0 ? (
+          <div className="mt-4 grid gap-3">
+            {selectedDeck.cards.map((card) => (
+              <div
+                key={card.id}
+                className="rounded-2xl border border-zinc-200 p-4 dark:border-zinc-800"
+              >
+                {editingCardId === card.id ? (
+                  <form onSubmit={handleUpdateCard} className="space-y-3">
+                    <input
+                      value={editingCardFrontText}
+                      onChange={(e) => setEditingCardFrontText(e.target.value)}
+                      className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm text-zinc-950 dark:border-zinc-800 dark:bg-zinc-950 dark:text-white"
+                      placeholder="Front text"
+                      required
+                    />
+
+                    <input
+                      value={editingCardBackText}
+                      onChange={(e) => setEditingCardBackText(e.target.value)}
+                      className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm text-zinc-950 dark:border-zinc-800 dark:bg-zinc-950 dark:text-white"
+                      placeholder="Back text"
+                      required
+                    />
+
+                    <input
+                      value={editingCardExampleSentence}
+                      onChange={(e) =>
+                        setEditingCardExampleSentence(e.target.value)
+                      }
+                      className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm text-zinc-950 dark:border-zinc-800 dark:bg-zinc-950 dark:text-white"
+                      placeholder="Example sentence"
+                    />
+
+                    <input
+                      value={editingCardNotes}
+                      onChange={(e) => setEditingCardNotes(e.target.value)}
+                      className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm text-zinc-950 dark:border-zinc-800 dark:bg-zinc-950 dark:text-white"
+                      placeholder="Notes"
+                    />
+
+                    <div className="flex flex-wrap gap-3">
+                      <button
+                        type="submit"
+                        className="rounded-xl bg-zinc-900 px-4 py-2 text-sm font-bold text-white transition hover:bg-zinc-700"
+                      >
+                        Save card
+                      </button>
+                      <button
+                        type="button"
+                        onClick={cancelEditingCard}
+                        className="rounded-xl bg-zinc-100 px-4 py-2 text-sm font-bold text-zinc-700 transition hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-200"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                ) : (
+                  <>
+                    <p className="text-sm font-bold uppercase text-nihon-red">
+                      Front
+                    </p>
+                    <p className="mt-1 text-lg font-black text-zinc-950 dark:text-white">
+                      {card.front_text}
+                    </p>
+                    <p className="mt-3 text-sm font-bold uppercase text-zinc-500">
+                      Back
+                    </p>
+                    <p className="mt-1 text-sm text-zinc-700 dark:text-zinc-300">
+                      {card.back_text}
+                    </p>
+                    {card.example_sentence && (
+                      <p className="mt-3 text-sm text-zinc-500 dark:text-zinc-400">
+                        Example: {card.example_sentence}
+                      </p>
+                    )}
+                    {card.notes && (
+                      <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+                        Notes: {card.notes}
+                      </p>
+                    )}
+
+                    <div className="mt-4 flex flex-wrap gap-3">
+                      <button
+                        type="button"
+                        onClick={() => startEditingCard(card)}
+                        className="rounded-xl bg-zinc-900 px-4 py-2 text-sm font-bold text-white transition hover:bg-zinc-700"
+                      >
+                        Edit card
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteCard(card)}
+                        className="rounded-xl bg-red-600 px-4 py-2 text-sm font-bold text-white transition hover:bg-red-700"
+                      >
+                        Delete card
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <EmptyState
+            title="No cards in this deck"
+            description="Add your first card using the form above."
+          />
         )}
       </section>
 
