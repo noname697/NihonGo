@@ -6,7 +6,7 @@ A full-stack Japanese learning platform for English speakers, with JLPT lessons,
 
 ## Try It
 
-**Live demo:** vercel
+**Live demo:** [Try NihonGo!](https://nihongo-udug.onrender.com)
 
 For local testing:
 
