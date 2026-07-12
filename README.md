@@ -262,12 +262,6 @@ GET    /api/flashcards/progress
 GET /api/dashboard/summary
 ```
 
-Full API details live in:
-
-```txt
-backend/docs/API.md
-```
-
 ## Validation
 
 Run backend tests:
