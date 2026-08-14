@@ -43,7 +43,7 @@ const Modules = () => {
     <div>
       <PageHeader
         eyebrow="JLPT Modules"
-        title="Choose you learning path"
+        title="Choose your learning path"
         description="Study Japanese step by step through JLPT levels, from beginner N5 to advanced N1."
       />
       {modules.length === 0 ? (

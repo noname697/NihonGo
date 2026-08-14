@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link, useParams } from "react-router";
 
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, CheckCircle2 } from "lucide-react";
 import { getLessonById, getLessonExercises } from "../api/content.api";
 import { getApiErrorMessage } from "../utils/getApiErrorMessage";
 
@@ -18,6 +18,7 @@ const LessonDetails = () => {
   const [lastLessonProgress, setLastLessonProgress] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const isLessonCompleted = Boolean(lastLessonProgress?.is_completed);
 
   const getLessonProgressFromResponse = (data) => {
     return data?.lesson_progress ?? data?.progress ?? null;
@@ -100,6 +101,41 @@ const LessonDetails = () => {
         </div>
       )}
 
+      {isLessonCompleted && (
+        <section className="mt-6 rounded-3xl border border-green-200 bg-green-50 p-6 dark:border-green-950 dark:bg-green-950/30">
+          <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-start gap-4">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-green-600 text-white">
+                <CheckCircle2 size={24} />
+              </div>
+
+              <div>
+                <p className="text-sm font-bold uppercase text-green-700 dark:text-green-300">Lesson completed</p>
+
+                <h2 className="mt-1 text-2xl font-black text-zinc-950 dark:text-white">Great Work!</h2>
+
+                <p className="mt-2 text-sm leading-6 text-zinc-600 dark:text-zinc-300">
+                  You finished this lesson with a score of{" "}
+                  <strong>
+                    {Number(lastLessonProgress.score || 0).toFixed(0)}%
+                  </strong>
+                  . Keep Practicing to make it stick.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-3">
+              <Link
+                to="/trainer"
+                className="rounded-xl bg-nihon-red px-4 py-2 text-sm font-bold text-white transition hover:bg-nihon-red-dark"
+              >
+                Practice characters
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
+
       <section className="mt-8">
         <div className="mb-5">
           <h2 className="text-2xl font-black text-zinc-950 dark:text-white">
@@ -107,7 +143,7 @@ const LessonDetails = () => {
           </h2>
 
           <p className="mt-2 text-zinc-500 dark:text-zinc-400">
-            Practice what you learned this lesson.
+            Practice what you learned in this lesson.
           </p>
         </div>
 

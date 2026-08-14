@@ -52,6 +52,11 @@ const Flashcards = () => {
 
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [showAnswer, setShowAnswer] = useState(false);
+  const [reviewSessionStats, setReviewSessionStats] = useState({
+    reviewed: 0,
+    remembered: 0,
+    missed: 0,
+  });
 
   const [isLoadingPage, setIsLoadingPage] = useState(true);
   const [isCreatingDeck, setIsCreatingDeck] = useState(false);
@@ -63,6 +68,14 @@ const Flashcards = () => {
     () => dueCards[currentCardIndex] || null,
     [dueCards, currentCardIndex],
   );
+
+  const hasReviewedThisSession = reviewSessionStats.reviewed > 0;
+  const reviewAccuracy =
+    reviewSessionStats.reviewed > 0
+      ? Math.round(
+          (reviewSessionStats.remembered / reviewSessionStats.reviewed) * 100,
+        )
+      : 0;
 
   const loadDecks = useCallback(async () => {
     const data = await getDecks();
@@ -207,6 +220,10 @@ const Flashcards = () => {
     }
   };
 
+  const resetReviewSession = () => {
+    setReviewSessionStats({ reviewed: 0, remembered: 0, missed: 0 });
+  };
+
   const handleReview = async (isCorrect) => {
     if (!currentCard) return;
 
@@ -215,6 +232,12 @@ const Flashcards = () => {
       setError(null);
 
       await reviewCard(currentCard.id, isCorrect);
+
+      setReviewSessionStats((prev) => ({
+        reviewed: prev.reviewed + 1,
+        remembered: prev.remembered + (isCorrect ? 1 : 0),
+        missed: prev.missed + (isCorrect ? 0 : 1),
+      }));
 
       await Promise.all([loadDueCards(selectedDeckId), loadProgress()]);
     } catch (error) {
@@ -391,6 +414,7 @@ const Flashcards = () => {
               type="button"
               onClick={() => {
                 const nextDeckId = String(deck.id);
+                resetReviewSession();
                 setSelectedDeckId(nextDeckId);
                 loadSelectedDeck(nextDeckId);
               }}
@@ -408,7 +432,7 @@ const Flashcards = () => {
           {decks.length === 0 && (
             <EmptyState
               title="No decks yet"
-              description="Create your first deck deck."
+              description="Create your first deck."
             />
           )}
         </div>
@@ -652,10 +676,28 @@ const Flashcards = () => {
               {currentCard.front_text}
             </p>
 
+            <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+              Deck: {currentCard.deck?.title || "Untitled deck"}
+            </p>
+
             {showAnswer && (
-              <p className="mt-4 text-lg font-bold text-nihon-red">
-                {currentCard.back_text}
-              </p>
+              <div className="mt-4 space-y-3">
+                <p className="text-lg font-bold text-nihon-red">
+                  {currentCard.back_text}
+                </p>
+
+                {currentCard.example_sentence && (
+                  <p className="rounded-xl bg-white px-4 py-3 text-sm text-zinc-600 dark:bg-zinc-900 dark:text-zinc-300">
+                    Example: {currentCard.example_sentence}
+                  </p>
+                )}
+
+                {currentCard.notes && (
+                  <p className="rounded-xl bg-white px-4 py-4 text-sm text-zinc-600 dark:bg-zinc-900 dark:text-zinc-300">
+                    Notes: {currentCard.notes}
+                  </p>
+                )}
+              </div>
             )}
 
             <div className="mt-5 flex flex-wrap gap-3">
@@ -687,6 +729,43 @@ const Flashcards = () => {
                   </button>
                 </>
               )}
+            </div>
+          </div>
+        ) : hasReviewedThisSession ? (
+          <div className="mt-4 rounded-2xl border border-green-200 bg-green-50 p-5 dark:border-green-950 dark:bg-green-950/30">
+            <p className="text-sm font-bold uppercase text-green-700 dark:text-green-300">
+              Review Completed
+            </p>
+
+            <h3 className="mt-2 text-2xl font-black text-zinc-950 dark:text-white">
+              Nice work today
+            </h3>
+
+            <div className="mt-4 grid gap-3 sm:grid-cols-4">
+              <div className="rounded-xl bg-white p-4 dark:bg-zinc-900">
+                <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                  Reviewed
+                </p>
+                <p className="text-2xl font-black text-zinc-950 dark:text-white">
+                  {reviewSessionStats.reviewed}
+                </p>
+              </div>
+              <div className="rounded-xl bg-white p-4 dark:bg-zinc-900">
+                <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                  Missed
+                </p>
+                <p className="text-2xl font-black text-zinc-950 dark:text-white">
+                  {reviewSessionStats.missed}
+                </p>
+              </div>
+              <div className="rounded-xl bg-white p-4 dark:bg-zinc-900">
+                <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                  Accuracy
+                </p>
+                <p className="text-2xl font-black text-zinc-950 dark:text-white">
+                  {reviewAccuracy}%
+                </p>
+              </div>
             </div>
           </div>
         ) : (

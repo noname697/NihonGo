@@ -20,6 +20,10 @@ const Trainer = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [typedAnswer, setTypedAnswer] = useState("");
   const [lastResult, setLastResult] = useState(null);
+  const [sessionStats, setSessionStats] = useState({
+    correct: 0,
+    wrong: 0,
+  });
 
   const [progress, setProgress] = useState([]);
   const [isLoadingProgress, setIsLoadingProgress] = useState(true);
@@ -29,6 +33,9 @@ const Trainer = () => {
   const currentCharacter = useMemo(() => {
     return characters[currentIndex] || null;
   }, [characters, currentIndex]);
+
+  const isPracticeCompleted =
+    characters.length > 0 && currentIndex >= characters.length;
 
   const loadProgress = useCallback(async () => {
     try {
@@ -59,6 +66,7 @@ const Trainer = () => {
       setCurrentIndex(0);
       setTypedAnswer("");
       setLastResult(null);
+      setSessionStats({ correct: 0, wrong: 0 });
     } catch (error) {
       setError(getApiErrorMessage(error));
     } finally {
@@ -69,7 +77,7 @@ const Trainer = () => {
   const submitAnswer = async (event) => {
     event.preventDefault();
 
-    if (!currentCharacter || !typedAnswer.trim()) return;
+    if (!currentCharacter || !typedAnswer.trim() || lastResult) return;
 
     try {
       setError(null);
@@ -79,6 +87,10 @@ const Trainer = () => {
         typedAnswer.trim(),
       );
       setLastResult(data);
+      setSessionStats((prev) => ({
+        correct: prev.correct + (data.result?.is_correct ? 1 : 0),
+        wrong: prev.wrong + (data.result?.is_correct ? 0 : 1),
+      }));
       await loadProgress();
     } catch (error) {
       setError(getApiErrorMessage(error));
@@ -157,7 +169,56 @@ const Trainer = () => {
       </section>
 
       <section className="mt-6 rounded-3xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
-        {!currentCharacter && !isLoadingPractice && (
+        {isPracticeCompleted && !isLoadingPractice && (
+          <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-5 dark:border-zinc-800 dark:bg-zinc-950">
+            <p className="text-sm font-bold uppercase text-nihon-red">
+              Practice completed
+            </p>
+
+            <h2 className="mt-2 text-2xl font-black text-zinc-950 dark:text-white">
+              Session Stats
+            </h2>
+
+            <div className="mt-4 grid gap-3 sm:grid-cols-3">
+              <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+                <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                  Correct
+                </p>
+                <p className="text-2xl font-black text-green-600">
+                  {sessionStats.correct}
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+                <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                  Wrong
+                </p>
+                <p className="text-2xl font-black text-red-600">
+                  {sessionStats.wrong}
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+                <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                  Accuracy
+                </p>
+                <p className="text-2xl font-black text-zinc-950 dark:text-white">
+                  {Math.round((sessionStats.correct / characters.length) * 100)}
+                  %
+                </p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={startPractice}
+              className="mt-5 rounded-xl bg-nihon-red px-4 py-2 text-sm font-bold text-white hover:bg-nihon-red-dark"
+            >
+              Practice Again
+            </button>
+          </div>
+        )}
+        {!currentCharacter && !isLoadingPractice && !isPracticeCompleted && (
           <EmptyState
             title="No exercises loaded"
             description="Click 'Start practice' to begin."
@@ -169,7 +230,7 @@ const Trainer = () => {
         {currentCharacter && !isLoadingPractice && (
           <>
             <p className="text-sm text-zinc-500 dark:text-zinc-400">
-              Item {currentIndex + 1} de {characters.length}
+              Item {currentIndex + 1} of {characters.length}
             </p>
 
             <div className="mt-3 text-6xl font-black text-nihon-red">
@@ -186,7 +247,7 @@ const Trainer = () => {
 
               <SubmitButton
                 loadingText="Checking..."
-                disabled={!typedAnswer.trim()}
+                disabled={!typedAnswer.trim() || Boolean(lastResult)}
               >
                 Submit answer
               </SubmitButton>
@@ -223,9 +284,13 @@ const Trainer = () => {
                     Next
                   </button>
                 ) : (
-                  <p className="mt-4 text-sm font-semibold text-green-600">
-                    Practice completed.
-                  </p>
+                  <button
+                    type="button"
+                    onClick={goNext}
+                    className="mt-4 rounded-xl bg-nihon-red px-4 py-2 text-sm font-bold text-white hover:bg-nihon-red-dark"
+                  >
+                    Finish Practice
+                  </button>
                 )}
               </div>
             )}

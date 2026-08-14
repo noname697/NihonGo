@@ -1,7 +1,8 @@
 import { Link, NavLink } from "react-router";
 import { useAuth } from "../../contexts/AuthContext";
 import { ThemeToggle } from "./ThemeToggle";
-import { LogOut } from "lucide-react";
+import { LogOut, Menu, X } from "lucide-react";
+import { useState } from "react";
 
 const NavLinkClass = ({ isActive }) => {
   return [
@@ -12,8 +13,16 @@ const NavLinkClass = ({ isActive }) => {
   ].join(" ");
 };
 
+const navItems = [
+  { to: "/dashboard", label: "Dashboard" },
+  { to: "/modules", label: "Modules" },
+  { to: "/trainer", label: "Trainer" },
+  { to: "/flashcards", label: "Flashcards" },
+];
+
 export const NavBar = () => {
   const { user, logout } = useAuth();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
     <header className="border-b border-zinc-200 bg-white/80 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/80">
@@ -31,21 +40,24 @@ export const NavBar = () => {
         </Link>
 
         <nav className="hidden items-center gap-6 md:flex">
-          <NavLink to="/dashboard" className={NavLinkClass}>
-            Dashboard
-          </NavLink>
-          <NavLink to="/modules" className={NavLinkClass}>
-            Modules
-          </NavLink>
-          <NavLink to="/trainer" className={NavLinkClass}>
-            Trainer
-          </NavLink>
-          <NavLink to="/flashcards" className={NavLinkClass}>
-            Flashcards
-          </NavLink>
+          {navItems.map((item) => (
+            <NavLink key={item.to} to={item.to} className={NavLinkClass}>
+              {item.label}
+            </NavLink>
+          ))}
         </nav>
 
         <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setIsMenuOpen((prev) => !prev)}
+            className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-zinc-100 text-zinc-700 dark:text-zinc-200 transition hover:bg-zinc-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 md:hidden"
+            aria-label={
+              isMenuOpen ? "Close navigation menu" : "Open navigation menu"
+            }
+          >
+            {isMenuOpen ? <X size={18} /> : <Menu size={18} />}
+          </button>
           <ThemeToggle />
 
           {user && (
@@ -60,6 +72,29 @@ export const NavBar = () => {
           )}
         </div>
       </div>
+      {isMenuOpen && (
+        <nav className="border-t border-zinc-200 bg-white px-4 py-3 dark:border-zinc-800 dark:bg-zinc-950 md:hidden">
+          <div className="mx-auto grid max-w-6xl gap-2">
+            {navItems.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                onClick={() => setIsMenuOpen(false)}
+                className={({ isActive }) =>
+                  [
+                    "rounded-xl px-4 py-3 text-sm font-bold transition",
+                    isActive
+                      ? "bg-red-50 text-nihon-red dark:bg-red-950/40"
+                      : "text-zinc-600 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-900",
+                  ].join(" ")
+                }
+              >
+                {item.label}
+              </NavLink>
+            ))}
+          </div>
+        </nav>
+      )}
     </header>
   );
 };

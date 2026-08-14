@@ -99,12 +99,12 @@ const ModuleDetails = () => {
             Lessons completed
           </p>
 
-          <strong className="mt-2 block text-4xl font-black tetx-zinc-950 dark:text-white">
+          <strong className="mt-2 block text-4xl font-black text-zinc-950 dark:text-white">
             {summary?.completed_lessons || 0}/{summary?.total_lessons || 0}
           </strong>
 
           <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
-            Keep going one lesson at time.
+            Keep going one lesson at a time.
           </p>
         </Card>
       </div>
